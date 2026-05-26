@@ -17,15 +17,9 @@ limitations under the License.
 package devicemanager
 
 import (
-	"errors"
-	"fmt"
-	"maps"
-	"math"
 	"sync"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"k8s.io/klog/v2"
 )
 
 type Device struct {
@@ -39,18 +33,10 @@ type Device struct {
 	releaseFunc func() error
 }
 
-func (d *Device) Release(force bool) {
-	if !d.isTainted || force {
-		if err := d.releaseFunc(); err != nil {
-			klog.ErrorS(err, "Error releasing device")
-		}
-	}
-}
+func (d *Device) Release(force bool) { _ = "STUB: not implemented"; return }
 
 // Taint marks the device as no longer reusable.
-func (d *Device) Taint() {
-	d.isTainted = true
-}
+func (d *Device) Taint() { _ = "STUB: not implemented"; return }
 
 type DeviceManager interface {
 	// NewDevice retrieves the device if the device is already assigned.
@@ -87,239 +73,108 @@ type inFlightEntry struct {
 type inFlightAttaching map[string]map[string]inFlightEntry
 
 func (i inFlightAttaching) Add(nodeID, volumeID, deviceName string, cardIndex *int32) {
-	attaching := i[nodeID]
-	if attaching == nil {
-		attaching = make(map[string]inFlightEntry)
-		i[nodeID] = attaching
-	}
-	attaching[volumeID] = inFlightEntry{DeviceName: deviceName, CardIndex: cardIndex}
+	_ = "STUB: not implemented"
+	return
 }
 
-func (i inFlightAttaching) Del(nodeID, volumeID string) {
-	delete(i[nodeID], volumeID)
-}
+func (i inFlightAttaching) Del(nodeID, volumeID string) { _ = "STUB: not implemented"; return }
 
 func (i inFlightAttaching) GetNames(nodeID string) map[string]string {
-	result := make(map[string]string)
-	for volumeID, entry := range i[nodeID] {
-		result[entry.DeviceName] = volumeID
-	}
-	return result
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (i inFlightAttaching) GetEntry(nodeID, volumeID string) (inFlightEntry, bool) {
-	entry, exists := i[nodeID][volumeID]
-	return entry, exists
+	_ = "STUB: not implemented"
+	return *new(inFlightEntry), false
 }
 
 func (i inFlightAttaching) GetEntries(nodeID string) map[string]inFlightEntry {
-	return i[nodeID]
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func NewDeviceManager() DeviceManager {
-	return &deviceManager{
-		nameAllocator: &nameAllocator{},
-		inFlight:      make(inFlightAttaching),
-	}
-}
+func NewDeviceManager() DeviceManager { _ = "STUB: not implemented"; return *new(DeviceManager) }
 
 func (d *deviceManager) NewDevice(instance *types.Instance, volumeID string, likelyBadNames *sync.Map, numCards int) (*Device, error) {
-	d.mux.Lock()
-	defer d.mux.Unlock()
-
-	if instance == nil {
-		return nil, errors.New("instance is nil")
-	}
-
-	// Get device names being attached and already attached to this instance
-	inUse := d.getDeviceNamesInUse(instance)
-
-	// Check if this volume is already assigned a device on this machine
-	if path := d.getPath(inUse, volumeID); path != "" {
-		cardIndex := d.getCardIndexForExistingVolume(instance, volumeID)
-		return d.newBlockDevice(instance, volumeID, path, true, cardIndex), nil
-	}
-
-	nodeID, err := getInstanceID(instance)
-	if err != nil {
-		return nil, err
-	}
-
-	name, err := d.nameAllocator.GetNext(inUse, likelyBadNames)
-	if err != nil {
-		return nil, fmt.Errorf("could not get a free device name to assign to node %s", nodeID)
-	}
-
-	// Calculate card index for new volume
-	cardCounts := d.getCardCounts(instance)
-	cardIndex := getNextCardIndex(numCards, cardCounts)
-
-	// Add the chosen device and volume to the "attachments in progress" map
-	d.inFlight.Add(nodeID, volumeID, name, cardIndex)
-
-	return d.newBlockDevice(instance, volumeID, name, false, cardIndex), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Get device names being attached and already attached to this instance
+
+// Check if this volume is already assigned a device on this machine
+
+// Calculate card index for new volume
+
+// Add the chosen device and volume to the "attachments in progress" map
 
 // getCardCounts returns a map of card index to volume count, accounting for both
 // volumes on the instance device mapping and volumes in the inflight map.
 // It ensures volumes are not double counted if they appear in both.
 func (d *deviceManager) getCardCounts(instance *types.Instance) map[int32]int {
-	cardCounts := make(map[int32]int)
-
-	// Track volume IDs we've already counted to avoid double counting
-	countedVolumes := make(map[string]bool)
-
-	// Count volumes per card from existing block device mappings
-	for _, blockDevice := range instance.BlockDeviceMappings {
-		if blockDevice.Ebs != nil && blockDevice.Ebs.EbsCardIndex != nil {
-			cardIndex := *blockDevice.Ebs.EbsCardIndex
-			cardCounts[cardIndex]++
-			if blockDevice.Ebs.VolumeId != nil {
-				countedVolumes[aws.ToString(blockDevice.Ebs.VolumeId)] = true
-			}
-		}
-	}
-
-	// Count volumes from inflight map, avoiding double counting
-	nodeID := aws.ToString(instance.InstanceId)
-	for volumeID, entry := range d.inFlight.GetEntries(nodeID) {
-		if entry.CardIndex != nil && !countedVolumes[volumeID] {
-			cardCounts[*entry.CardIndex]++
-		}
-	}
-
-	return cardCounts
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Track volume IDs we've already counted to avoid double counting
+
+// Count volumes per card from existing block device mappings
+
+// Count volumes from inflight map, avoiding double counting
 
 // getNextCardIndex determines the card index to use for a new volume attachment.
 // It implements a "least occupied" load balancing strategy.
 // Returns nil when the instance has only 1 card. For instances with multiple cards,
 // returns the card with the fewest volumes. When counts are equal, prefers lower card index.
 func getNextCardIndex(numCards int, cardCounts map[int32]int) *int32 {
+	_ = "STUB: not implemented"
 	// If instance has only 1 card, return nil (no index needed)
-	if numCards <= 1 {
-		return nil
-	}
-
-	// Initialize card counts for all cards (ensure all cards are represented)
-	for i := range numCards {
-		cardIndex := int32(i)
-		if _, exists := cardCounts[cardIndex]; !exists {
-			cardCounts[cardIndex] = 0
-		}
-	}
-
-	// Find the card with the fewest devices (prefer lower index on tie)
-	minCount := math.MaxInt32
-	selectedCard := int32(0)
-	for cardIndex, count := range cardCounts {
-		if count < minCount || (count == minCount && cardIndex < selectedCard) {
-			minCount = count
-			selectedCard = cardIndex
-		}
-	}
-
-	return &selectedCard
+	return nil
 }
+
+// Initialize card counts for all cards (ensure all cards are represented)
+
+// Find the card with the fewest devices (prefer lower index on tie)
 
 // getCardIndexForExistingVolume finds the card index for an already attached volume.
 func (d *deviceManager) getCardIndexForExistingVolume(instance *types.Instance, volumeID string) *int32 {
-	for _, blockDevice := range instance.BlockDeviceMappings {
-		if blockDevice.Ebs != nil &&
-			blockDevice.Ebs.VolumeId != nil &&
-			aws.ToString(blockDevice.Ebs.VolumeId) == volumeID {
-			return blockDevice.Ebs.EbsCardIndex
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (d *deviceManager) GetDevice(instance *types.Instance, volumeID string) (*Device, error) {
-	d.mux.Lock()
-	defer d.mux.Unlock()
-
-	inUse := d.getDeviceNamesInUse(instance)
-
-	if path := d.getPath(inUse, volumeID); path != "" {
-		cardIndex := d.getCardIndexForExistingVolume(instance, volumeID)
-		return d.newBlockDevice(instance, volumeID, path, true, cardIndex), nil
-	}
-
-	return d.newBlockDevice(instance, volumeID, "", false, nil), nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *deviceManager) newBlockDevice(instance *types.Instance, volumeID string, path string, isAlreadyAssigned bool, cardIndex *int32) *Device {
-	device := &Device{
-		Instance:          instance,
-		Path:              path,
-		VolumeID:          volumeID,
-		IsAlreadyAssigned: isAlreadyAssigned,
-		CardIndex:         cardIndex,
-
-		isTainted: false,
-	}
-	device.releaseFunc = func() error {
-		return d.release(device)
-	}
-	return device
-}
-
-func (d *deviceManager) release(device *Device) error {
-	nodeID, err := getInstanceID(device.Instance)
-	if err != nil {
-		return err
-	}
-
-	d.mux.Lock()
-	defer d.mux.Unlock()
-
-	entry, exists := d.inFlight.GetEntry(nodeID, device.VolumeID)
-	if !exists {
-		// Attaching is not in progress, so there's nothing to release
-		return nil
-	}
-
-	if device.Path != entry.DeviceName {
-		// This actually can happen, because GetNext combines the inFlightAttaching map with the volumes
-		// attached to the instance (as reported by the EC2 API).  So if release comes after
-		// a 10 second poll delay, we might as well have had a concurrent request to allocate a mountpoint,
-		// which because we allocate sequentially is very likely to get the immediately freed volume.
-		return fmt.Errorf("release on device %q assigned to different path: %q vs %q", device.VolumeID, device.Path, entry.DeviceName)
-	}
-
-	klog.V(5).InfoS("[Debug] Releasing in-process", "attachment entry", device.Path, "volume", device.VolumeID)
-	d.inFlight.Del(nodeID, device.VolumeID)
-
+	_ = "STUB: not implemented"
 	return nil
 }
+
+func (d *deviceManager) release(device *Device) error { _ = "STUB: not implemented"; return nil }
+
+// Attaching is not in progress, so there's nothing to release
+
+// This actually can happen, because GetNext combines the inFlightAttaching map with the volumes
+// attached to the instance (as reported by the EC2 API).  So if release comes after
+// a 10 second poll delay, we might as well have had a concurrent request to allocate a mountpoint,
+// which because we allocate sequentially is very likely to get the immediately freed volume.
 
 // getDeviceNamesInUse returns the device to volume ID mapping
 // the mapping includes both already attached and being attached volumes.
 func (d *deviceManager) getDeviceNamesInUse(instance *types.Instance) map[string]string {
-	nodeID := aws.ToString(instance.InstanceId)
-	inUse := map[string]string{}
-	for _, blockDevice := range instance.BlockDeviceMappings {
-		name := aws.ToString(blockDevice.DeviceName)
-		inUse[name] = aws.ToString(blockDevice.Ebs.VolumeId)
-	}
-
-	maps.Copy(inUse, d.inFlight.GetNames(nodeID))
-
-	return inUse
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (d *deviceManager) getPath(inUse map[string]string, volumeID string) string {
-	for name, volID := range inUse {
-		if volumeID == volID {
-			return name
-		}
-	}
+	_ = "STUB: not implemented"
 	return ""
 }
 
 func getInstanceID(instance *types.Instance) (string, error) {
-	if instance == nil {
-		return "", errors.New("can't get ID from a nil instance")
-	}
-	return aws.ToString(instance.InstanceId), nil
+	_ = "STUB: not implemented"
+	return "", nil
 }

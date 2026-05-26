@@ -15,36 +15,18 @@ limitations under the License.
 package testsuites
 
 import (
-	"context"
 	"fmt"
-	"math/rand"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	volumesnapshotv1 "github.com/kubernetes-csi/external-snapshotter/client/v4/apis/volumesnapshot/v1"
-	snapshotclientset "github.com/kubernetes-csi/external-snapshotter/client/v4/clientset/versioned"
 	awscloud "github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud"
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	apps "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
 	storagev1 "k8s.io/api/storage/v1"
-	apierrs "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/resource"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/wait"
 	clientset "k8s.io/client-go/kubernetes"
 	restclientset "k8s.io/client-go/rest"
-	"k8s.io/kubernetes/test/e2e/framework"
-	e2edeployment "k8s.io/kubernetes/test/e2e/framework/deployment"
-	e2epod "k8s.io/kubernetes/test/e2e/framework/pod"
-	e2epodoutput "k8s.io/kubernetes/test/e2e/framework/pod/output"
-	e2epv "k8s.io/kubernetes/test/e2e/framework/pv"
-	imageutils "k8s.io/kubernetes/test/utils/image"
 )
 
 const (
@@ -65,27 +47,16 @@ type TestStorageClass struct {
 }
 
 func NewTestStorageClass(c clientset.Interface, ns *v1.Namespace, sc *storagev1.StorageClass) *TestStorageClass {
-	return &TestStorageClass{
-		client:       c,
-		storageClass: sc,
-		namespace:    ns,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (t *TestStorageClass) Create() storagev1.StorageClass {
-	var err error
-
-	By("creating a StorageClass " + t.storageClass.Name)
-	t.storageClass, err = t.client.StorageV1().StorageClasses().Create(context.Background(), t.storageClass, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-	return *t.storageClass
+	_ = "STUB: not implemented"
+	return *new(storagev1.StorageClass)
 }
 
-func (t *TestStorageClass) Cleanup() {
-	framework.Logf("deleting StorageClass %s", t.storageClass.Name)
-	err := t.client.StorageV1().StorageClasses().Delete(context.Background(), t.storageClass.Name, metav1.DeleteOptions{})
-	framework.ExpectNoError(err)
-}
+func (t *TestStorageClass) Cleanup() { _ = "STUB: not implemented"; return }
 
 type TestVolumeSnapshotClass struct {
 	client              restclientset.Interface
@@ -94,200 +65,66 @@ type TestVolumeSnapshotClass struct {
 }
 
 func NewTestVolumeSnapshotClass(c restclientset.Interface, ns *v1.Namespace, vsc *volumesnapshotv1.VolumeSnapshotClass) *TestVolumeSnapshotClass {
-	return &TestVolumeSnapshotClass{
-		client:              c,
-		volumeSnapshotClass: vsc,
-		namespace:           ns,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (t *TestVolumeSnapshotClass) Create() {
-	By("creating a VolumeSnapshotClass")
-	var err error
-	t.volumeSnapshotClass, err = snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshotClasses().Create(context.Background(), t.volumeSnapshotClass, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-}
+func (t *TestVolumeSnapshotClass) Create() { _ = "STUB: not implemented"; return }
 
 func (t *TestVolumeSnapshotClass) CreateSnapshot(pvc *v1.PersistentVolumeClaim) *volumesnapshotv1.VolumeSnapshot {
-	By("creating a VolumeSnapshot for " + pvc.Name)
-	snapshot := &volumesnapshotv1.VolumeSnapshot{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       VolumeSnapshotKind,
-			APIVersion: SnapshotAPIVersion,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "volume-snapshot-",
-			Namespace:    t.namespace.Name,
-		},
-		Spec: volumesnapshotv1.VolumeSnapshotSpec{
-			VolumeSnapshotClassName: &t.volumeSnapshotClass.Name,
-			Source: volumesnapshotv1.VolumeSnapshotSource{
-				PersistentVolumeClaimName: &pvc.Name,
-			},
-		},
-	}
-	snapshot, err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshots(t.namespace.Name).Create(context.Background(), snapshot, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-	return snapshot
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (t *TestVolumeSnapshotClass) CreateStaticVolumeSnapshot(vsc *volumesnapshotv1.VolumeSnapshotContent) *volumesnapshotv1.VolumeSnapshot {
-	By("creating a VolumeSnapshot from vsc " + vsc.Name)
-	snapshot := &volumesnapshotv1.VolumeSnapshot{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       VolumeSnapshotKind,
-			APIVersion: SnapshotAPIVersion,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      volumeSnapshotNameStatic,
-			Namespace: t.namespace.Name,
-		},
-		Spec: volumesnapshotv1.VolumeSnapshotSpec{
-			VolumeSnapshotClassName: &t.volumeSnapshotClass.Name,
-			Source: volumesnapshotv1.VolumeSnapshotSource{
-				VolumeSnapshotContentName: &vsc.Name,
-			},
-		},
-	}
-	snapshotObj, err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshots(t.namespace.Name).Create(context.Background(), snapshot, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-	return snapshotObj
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (t *TestVolumeSnapshotClass) CreateStaticVolumeSnapshotContent(snapshotID string) *volumesnapshotv1.VolumeSnapshotContent {
-	By("creating a VolumeSnapshotContent from snapshotID: " + snapshotID)
-	snapshotContent := &volumesnapshotv1.VolumeSnapshotContent{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       VolumeSnapshotContentKind,
-			APIVersion: SnapshotAPIVersion,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      volumeSnapshotContenetNameStatic,
-			Namespace: t.namespace.Name,
-		},
-		Spec: volumesnapshotv1.VolumeSnapshotContentSpec{
-			VolumeSnapshotClassName: &t.volumeSnapshotClass.Name,
-			DeletionPolicy:          "Delete",
-			VolumeSnapshotRef: v1.ObjectReference{
-				Kind:      VolumeSnapshotKind,
-				Name:      volumeSnapshotNameStatic,
-				Namespace: t.namespace.Name,
-			},
-			Driver: util.GetDriverName(),
-			Source: volumesnapshotv1.VolumeSnapshotContentSource{
-				SnapshotHandle: aws.String(snapshotID),
-			},
-		},
-	}
-	volumeSnapshotContent, err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshotContents().Create(context.Background(), snapshotContent, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-	return volumeSnapshotContent
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (t *TestVolumeSnapshotClass) UpdateStaticVolumeSnapshotContent(volumeSnapshot *volumesnapshotv1.VolumeSnapshot, volumeSnapshotContent *volumesnapshotv1.VolumeSnapshotContent) {
-	volumeSnapshotContent.Spec.VolumeSnapshotRef.Name = volumeSnapshot.Name
-	_, err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshotContents().Update(context.Background(), volumeSnapshotContent, metav1.UpdateOptions{})
-	framework.ExpectNoError(err)
+	_ = "STUB: not implemented"
+	return
 }
-func (t *TestVolumeSnapshotClass) ReadyToUse(snapshot *volumesnapshotv1.VolumeSnapshot) {
-	By("waiting for VolumeSnapshot to be ready to use - " + snapshot.Name)
-	err := wait.PollUntilContextTimeout(context.Background(), 15*time.Second, 5*time.Minute, false, func(ctx context.Context) (bool, error) {
-		vs, err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshots(t.namespace.Name).Get(ctx, snapshot.Name, metav1.GetOptions{})
-		if err != nil {
-			return false, fmt.Errorf("did not see ReadyToUse: %w", err)
-		}
 
-		if vs.Status == nil || vs.Status.ReadyToUse == nil {
-			return false, nil
-		}
-		return *vs.Status.ReadyToUse, nil
-	})
-	framework.ExpectNoError(err)
+func (t *TestVolumeSnapshotClass) ReadyToUse(snapshot *volumesnapshotv1.VolumeSnapshot) {
+	_ = "STUB: not implemented"
+	return
 }
 
 func (t *TestVolumeSnapshotClass) unlockSnapshot(vs *volumesnapshotv1.VolumeSnapshot) {
-	By("Unlocking Volume Snapshot " + vs.Name)
-	cfg, err := config.LoadDefaultConfig(context.Background())
-	if err != nil {
-		By(fmt.Sprintf("Failed to load AWS config, skipping unlock: %v", err))
-		return
-	}
-	ec2Client := ec2.NewFromConfig(cfg)
-
-	result, err := ec2Client.DescribeSnapshots(context.Background(), &ec2.DescribeSnapshotsInput{
-		Filters: []types.Filter{
-			{
-				Name:   aws.String("tag:" + awscloud.SnapshotNameTagKey),
-				Values: []string{"snapshot-" + string(vs.UID)},
-			},
-		},
-	})
-	if err != nil || len(result.Snapshots) == 0 {
-		return // Snapshot not found or error, skip unlock
-	}
-
-	snapshotId := *result.Snapshots[0].SnapshotId
-
-	_, err = ec2Client.UnlockSnapshot(context.Background(), &ec2.UnlockSnapshotInput{
-		SnapshotId: aws.String(snapshotId),
-	})
-	if err != nil {
-		By(fmt.Sprintf("Failed to unlock snapshot %s: %v", snapshotId, err))
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func (t *TestVolumeSnapshotClass) DeleteSnapshot(vs *volumesnapshotv1.VolumeSnapshot) {
-	By("deleting a VolumeSnapshot " + vs.Name)
-	err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshots(t.namespace.Name).Delete(context.Background(), vs.Name, metav1.DeleteOptions{})
-	framework.ExpectNoError(err)
+// Snapshot not found or error, skip unlock
 
-	err = t.waitForSnapshotDeleted(t.namespace.Name, vs.Name, 5*time.Second, 5*time.Minute)
-	framework.ExpectNoError(err)
+func (t *TestVolumeSnapshotClass) DeleteSnapshot(vs *volumesnapshotv1.VolumeSnapshot) {
+	_ = "STUB: not implemented"
+	return
 }
 
 func (t *TestVolumeSnapshotClass) DeleteVolumeSnapshotContent(vsc *volumesnapshotv1.VolumeSnapshotContent) {
-	By("deleting a VolumeSnapshotContent " + vsc.Name)
-	snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshotContents().Delete(context.Background(), vsc.Name, metav1.DeleteOptions{}) //nolint
-	err := t.waitForVolumeSnapshotContentDeleted(vsc.Name, 5*time.Second, 5*time.Minute)
-	framework.ExpectNoError(err)
+	_ = "STUB: not implemented"
+	return
 }
 
-func (t *TestVolumeSnapshotClass) Cleanup() {
-	framework.Logf("deleting VolumeSnapshotClass %s", t.volumeSnapshotClass.Name)
-	err := snapshotclientset.New(t.client).SnapshotV1().VolumeSnapshotClasses().Delete(context.Background(), t.volumeSnapshotClass.Name, metav1.DeleteOptions{})
-	framework.ExpectNoError(err)
-}
+//nolint
+
+func (t *TestVolumeSnapshotClass) Cleanup() { _ = "STUB: not implemented"; return }
 
 func (t *TestVolumeSnapshotClass) waitForSnapshotDeleted(ns string, snapshotName string, poll, timeout time.Duration) error {
-	framework.Logf("Waiting up to %v for VolumeSnapshot %s to be removed", timeout, snapshotName)
-	c := snapshotclientset.New(t.client).SnapshotV1()
-	for start := time.Now(); time.Since(start) < timeout; time.Sleep(poll) {
-		_, err := c.VolumeSnapshots(ns).Get(context.Background(), snapshotName, metav1.GetOptions{})
-		if err != nil {
-			if apierrs.IsNotFound(err) {
-				framework.Logf("Snapshot %q in namespace %q doesn't exist in the system", snapshotName, ns)
-				return nil
-			}
-			framework.Logf("Failed to get snapshot %q in namespace %q, retrying in %v. Error: %v", snapshotName, ns, poll, err)
-		}
-	}
-	return fmt.Errorf("VolumeSnapshot %s is not removed from the system within %v", snapshotName, timeout)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (t *TestVolumeSnapshotClass) waitForVolumeSnapshotContentDeleted(vscName string, poll, timeout time.Duration) error {
-	framework.Logf("Waiting up to %v for VolumeSnapshotContent %s to be removed", timeout, vscName)
-	c := snapshotclientset.New(t.client).SnapshotV1()
-	for start := time.Now(); time.Since(start) < timeout; time.Sleep(poll) {
-		_, err := c.VolumeSnapshotContents().Get(context.Background(), vscName, metav1.GetOptions{})
-		if err != nil {
-			if apierrs.IsNotFound(err) {
-				framework.Logf("VolumeSnapshotContent %q doesn't exist in the system", vscName)
-				return nil
-			}
-			framework.Logf("Failed to get VolumeSnapshotContent %q, retrying in %v. Error: %v", vscName, poll, err)
-		}
-	}
-	return fmt.Errorf("VolumeSnapshot %s is not removed from the system within %v", vscName, timeout)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TestPreProvisionedPersistentVolume struct {
@@ -297,18 +134,13 @@ type TestPreProvisionedPersistentVolume struct {
 }
 
 func NewTestPreProvisionedPersistentVolume(c clientset.Interface, pv *v1.PersistentVolume) *TestPreProvisionedPersistentVolume {
-	return &TestPreProvisionedPersistentVolume{
-		client:                    c,
-		requestedPersistentVolume: pv,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (pv *TestPreProvisionedPersistentVolume) Create() v1.PersistentVolume {
-	var err error
-	By("creating a PV")
-	pv.persistentVolume, err = pv.client.CoreV1().PersistentVolumes().Create(context.Background(), pv.requestedPersistentVolume, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-	return *pv.persistentVolume
+	_ = "STUB: not implemented"
+	return *new(v1.PersistentVolume)
 }
 
 type TestPersistentVolumeClaim struct {
@@ -325,192 +157,79 @@ type TestPersistentVolumeClaim struct {
 }
 
 func NewTestPersistentVolumeClaim(c clientset.Interface, ns *v1.Namespace, claimSize string, volumeMode VolumeMode, sc *storagev1.StorageClass, accessMode v1.PersistentVolumeAccessMode) *TestPersistentVolumeClaim {
-	mode := v1.PersistentVolumeFilesystem
-	if volumeMode == Block {
-		mode = v1.PersistentVolumeBlock
-	}
-	return &TestPersistentVolumeClaim{
-		client:       c,
-		claimSize:    claimSize,
-		volumeMode:   mode,
-		namespace:    ns,
-		storageClass: sc,
-		accessMode:   accessMode,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func NewTestPersistentVolumeClaimWithDataSource(c clientset.Interface, ns *v1.Namespace, claimSize string, volumeMode VolumeMode, sc *storagev1.StorageClass, dataSource *v1.TypedLocalObjectReference, accessMode v1.PersistentVolumeAccessMode) *TestPersistentVolumeClaim {
-	mode := v1.PersistentVolumeFilesystem
-	if volumeMode == Block {
-		mode = v1.PersistentVolumeBlock
-	}
-	By("Create tpvc with data source")
-	return &TestPersistentVolumeClaim{
-		client:       c,
-		claimSize:    claimSize,
-		volumeMode:   mode,
-		namespace:    ns,
-		storageClass: sc,
-		dataSource:   dataSource,
-		accessMode:   accessMode,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (t *TestPersistentVolumeClaim) Create() {
-	var err error
-
-	By("creating a PVC")
-	storageClassName := ""
-	if t.storageClass != nil {
-		storageClassName = t.storageClass.Name
-	}
-	t.requestedPersistentVolumeClaim = generatePVC(t.namespace.Name, storageClassName, t.claimSize, t.volumeMode, t.dataSource, t.accessMode)
-	t.persistentVolumeClaim, err = t.client.CoreV1().PersistentVolumeClaims(t.namespace.Name).Create(context.Background(), t.requestedPersistentVolumeClaim, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-}
+func (t *TestPersistentVolumeClaim) Create() { _ = "STUB: not implemented"; return }
 
 func (t *TestPersistentVolumeClaim) ValidateProvisionedPersistentVolume() {
-	var err error
+	_ = "STUB: not implemented"
 
 	// Get the bound PersistentVolume
-	By("validating provisioned PV")
-	t.persistentVolume, err = t.client.CoreV1().PersistentVolumes().Get(context.Background(), t.persistentVolumeClaim.Spec.VolumeName, metav1.GetOptions{})
-	framework.ExpectNoError(err)
-
-	// Check sizes
-	expectedCapacity := t.requestedPersistentVolumeClaim.Spec.Resources.Requests[v1.ResourceStorage]
-	claimCapacity := t.persistentVolumeClaim.Spec.Resources.Requests[v1.ResourceStorage]
-	Expect(claimCapacity.Value()).To(Equal(expectedCapacity.Value()), "claimCapacity is not equal to requestedCapacity")
-
-	pvCapacity := t.persistentVolume.Spec.Capacity[v1.ResourceStorage]
-	Expect(pvCapacity.Value()).To(Equal(expectedCapacity.Value()), "pvCapacity is not equal to requestedCapacity")
-
-	// Check PV properties
-	By("checking the PV")
-	expectedAccessModes := t.requestedPersistentVolumeClaim.Spec.AccessModes
-	Expect(t.persistentVolume.Spec.AccessModes).To(Equal(expectedAccessModes))
-	Expect(t.persistentVolume.Spec.ClaimRef.Name).To(Equal(t.persistentVolumeClaim.ObjectMeta.Name))
-	Expect(t.persistentVolume.Spec.ClaimRef.Namespace).To(Equal(t.persistentVolumeClaim.ObjectMeta.Namespace))
-	// If storageClass is nil, PV was pre-provisioned with these values already set
-	if t.storageClass != nil {
-		Expect(t.persistentVolume.Spec.PersistentVolumeReclaimPolicy).To(Equal(*t.storageClass.ReclaimPolicy))
-		Expect(t.persistentVolume.Spec.MountOptions).To(Equal(t.storageClass.MountOptions))
-		if *t.storageClass.VolumeBindingMode == storagev1.VolumeBindingWaitForFirstConsumer {
-			Expect(t.persistentVolume.Spec.NodeAffinity.Required.NodeSelectorTerms[0].MatchExpressions[0].Values).
-				To(HaveLen(1))
-		}
-		if len(t.storageClass.AllowedTopologies) > 0 {
-			// Since we're chaging our topology key, assume we have the values below to compare:
-			// NodeSelectorTerms: [{[{topology.ebs.csi.aws.com/zone In [us-west-2a]} {topology.kubernetes.io/zone In [us-west-2a]}] []}]
-			// AllowedTopologies: [{[{topology.ebs.csi.aws.com/zone [us-west-2a us-west-2b us-west-2c]}]}]
-			// As you can see tests might fail depending on the ordering of the NodeSelectorTerms. That's why we're doing this "hack".
-			// This is a quick fix to unblock the PRs we have. We really need to improve this. TODO
-
-			keyFound := false
-			for _, v := range t.persistentVolume.Spec.NodeAffinity.Required.NodeSelectorTerms[0].MatchExpressions {
-				if v.Key == "topology"+util.GetDriverName()+"/zone" {
-					keyFound = true
-					Expect(v.Key).To(Equal(t.storageClass.AllowedTopologies[0].MatchLabelExpressions[0].Key))
-				}
-			}
-
-			// additional sanity check so we can catch an unintended test case that'd hide failures
-			if !keyFound {
-				Fail("Volume is expected to have a node selector term.")
-			}
-
-			for _, v := range t.persistentVolume.Spec.NodeAffinity.Required.NodeSelectorTerms[0].MatchExpressions[0].Values {
-				Expect(t.storageClass.AllowedTopologies[0].MatchLabelExpressions[0].Values).To(ContainElement(v))
-			}
-		}
-	}
+	return
 }
+
+// Check sizes
+
+// Check PV properties
+
+// If storageClass is nil, PV was pre-provisioned with these values already set
+
+// Since we're chaging our topology key, assume we have the values below to compare:
+// NodeSelectorTerms: [{[{topology.ebs.csi.aws.com/zone In [us-west-2a]} {topology.kubernetes.io/zone In [us-west-2a]}] []}]
+// AllowedTopologies: [{[{topology.ebs.csi.aws.com/zone [us-west-2a us-west-2b us-west-2c]}]}]
+// As you can see tests might fail depending on the ordering of the NodeSelectorTerms. That's why we're doing this "hack".
+// This is a quick fix to unblock the PRs we have. We really need to improve this. TODO
+
+// additional sanity check so we can catch an unintended test case that'd hide failures
 
 func (t *TestPersistentVolumeClaim) WaitForBound() v1.PersistentVolumeClaim {
-	var err error
-
-	By(fmt.Sprintf("waiting for PVC to be in phase %q", v1.ClaimBound))
-	err = e2epv.WaitForPersistentVolumeClaimPhase(context.Background(), v1.ClaimBound, t.client, t.namespace.Name, t.persistentVolumeClaim.Name, framework.Poll, framework.ClaimProvisionTimeout)
-	framework.ExpectNoError(err)
-
-	By("checking the PVC")
-	// Get new copy of the claim
-	t.persistentVolumeClaim, err = t.client.CoreV1().PersistentVolumeClaims(t.namespace.Name).Get(context.Background(), t.persistentVolumeClaim.Name, metav1.GetOptions{})
-	framework.ExpectNoError(err)
-
-	return *t.persistentVolumeClaim
+	_ = "STUB: not implemented"
+	return *new(v1.PersistentVolumeClaim)
 }
+
+// Get new copy of the claim
 
 func generatePVC(namespace, storageClassName, claimSize string, volumeMode v1.PersistentVolumeMode, dataSource *v1.TypedLocalObjectReference, accessMode v1.PersistentVolumeAccessMode) *v1.PersistentVolumeClaim {
-	if accessMode == "" {
-		accessMode = v1.ReadWriteOnce
-	}
-	return &v1.PersistentVolumeClaim{
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: "pvc-",
-			Namespace:    namespace,
-		},
-		Spec: v1.PersistentVolumeClaimSpec{
-			StorageClassName: &storageClassName,
-			AccessModes: []v1.PersistentVolumeAccessMode{
-				accessMode,
-			},
-			Resources: v1.VolumeResourceRequirements{
-				Requests: v1.ResourceList{
-					v1.ResourceStorage: resource.MustParse(claimSize),
-				},
-			},
-			VolumeMode: &volumeMode,
-			DataSource: dataSource,
-		},
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (t *TestPersistentVolumeClaim) Cleanup() {
-	framework.Logf("deleting PVC %q/%q", t.namespace.Name, t.persistentVolumeClaim.Name)
-	err := e2epv.DeletePersistentVolumeClaim(context.Background(), t.client, t.persistentVolumeClaim.Name, t.namespace.Name)
-	framework.ExpectNoError(err)
-	// Wait for the PV to get deleted if reclaim policy is Delete. (If it's
-	// Retain, there's no use waiting because the PV won't be auto-deleted and
-	// it's expected for the caller to do it.) Technically, the first few delete
-	// attempts may fail, as the volume is still attached to a node because
-	// kubelet is slowly cleaning up the previous pod, however it should succeed
-	// in a couple of minutes.
-	if t.persistentVolume != nil && t.persistentVolume.Spec.PersistentVolumeReclaimPolicy == v1.PersistentVolumeReclaimDelete {
-		By(fmt.Sprintf("waiting for claim's PV %q to be deleted", t.persistentVolume.Name))
-		err = e2epv.WaitForPersistentVolumeDeleted(context.Background(), t.client, t.persistentVolume.Name, 5*time.Second, 10*time.Minute)
-		framework.ExpectNoError(err)
-	}
-	// Wait for the PVC to be deleted
-	err = waitForPersistentVolumeClaimDeleted(t.client, t.namespace.Name, t.persistentVolumeClaim.Name, 5*time.Second, 5*time.Minute)
-	framework.ExpectNoError(err)
-}
+func (t *TestPersistentVolumeClaim) Cleanup() { _ = "STUB: not implemented"; return }
+
+// Wait for the PV to get deleted if reclaim policy is Delete. (If it's
+// Retain, there's no use waiting because the PV won't be auto-deleted and
+// it's expected for the caller to do it.) Technically, the first few delete
+// attempts may fail, as the volume is still attached to a node because
+// kubelet is slowly cleaning up the previous pod, however it should succeed
+// in a couple of minutes.
+
+// Wait for the PVC to be deleted
 
 func (t *TestPersistentVolumeClaim) ReclaimPolicy() v1.PersistentVolumeReclaimPolicy {
-	return t.persistentVolume.Spec.PersistentVolumeReclaimPolicy
+	_ = "STUB: not implemented"
+	return *new(v1.PersistentVolumeReclaimPolicy)
 }
 
 func (t *TestPersistentVolumeClaim) WaitForPersistentVolumePhase(phase v1.PersistentVolumePhase) {
-	err := e2epv.WaitForPersistentVolumePhase(context.Background(), phase, t.client, t.persistentVolume.Name, 5*time.Second, 10*time.Minute)
-	framework.ExpectNoError(err)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (t *TestPersistentVolumeClaim) DeleteBoundPersistentVolume() {
-	By(fmt.Sprintf("deleting PV %q", t.persistentVolume.Name))
-	err := e2epv.DeletePersistentVolume(context.Background(), t.client, t.persistentVolume.Name)
-	framework.ExpectNoError(err)
-	By(fmt.Sprintf("waiting for claim's PV %q to be deleted", t.persistentVolume.Name))
-	err = e2epv.WaitForPersistentVolumeDeleted(context.Background(), t.client, t.persistentVolume.Name, 5*time.Second, 10*time.Minute)
-	framework.ExpectNoError(err)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (t *TestPersistentVolumeClaim) DeleteBackingVolume(cloud awscloud.Cloud) {
-	volumeID := t.persistentVolume.Spec.CSI.VolumeHandle
-	By(fmt.Sprintf("deleting EBS volume %q", volumeID))
-	ok, err := cloud.DeleteDisk(context.Background(), volumeID)
-	if err != nil || !ok {
-		Fail(fmt.Sprintf("could not delete volume %q: %v", volumeID, err))
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 type TestDeployment struct {
@@ -521,134 +240,33 @@ type TestDeployment struct {
 }
 
 func NewTestDeployment(c clientset.Interface, ns *v1.Namespace, command string, pvc *v1.PersistentVolumeClaim, volumeName, mountPath string, readOnly bool) *TestDeployment {
-	generateName := "ebs-volume-tester-"
-	selectorValue := fmt.Sprintf("%s%d", generateName, rand.Int())
-	replicas := int32(1)
-	return &TestDeployment{
-		client:    c,
-		namespace: ns,
-		deployment: &apps.Deployment{
-			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: generateName,
-			},
-			Spec: apps.DeploymentSpec{
-				Replicas: &replicas,
-				Selector: &metav1.LabelSelector{
-					MatchLabels: map[string]string{"app": selectorValue},
-				},
-				Template: v1.PodTemplateSpec{
-					ObjectMeta: metav1.ObjectMeta{
-						Labels: map[string]string{"app": selectorValue},
-					},
-					Spec: v1.PodSpec{
-						Containers: []v1.Container{
-							{
-								Name:    "volume-tester",
-								Image:   imageutils.GetE2EImage(imageutils.BusyBox),
-								Command: []string{"/bin/sh"},
-								Args:    []string{"-c", command},
-								VolumeMounts: []v1.VolumeMount{
-									{
-										Name:      volumeName,
-										MountPath: mountPath,
-										ReadOnly:  readOnly,
-									},
-								},
-							},
-						},
-						RestartPolicy: v1.RestartPolicyAlways,
-						Volumes: []v1.Volume{
-							{
-								Name: volumeName,
-								VolumeSource: v1.VolumeSource{
-									PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-										ClaimName: pvc.Name,
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (t *TestDeployment) Create() {
-	var err error
-	t.deployment, err = t.client.AppsV1().Deployments(t.namespace.Name).Create(context.Background(), t.deployment, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-	err = e2edeployment.WaitForDeploymentComplete(t.client, t.deployment)
-	framework.ExpectNoError(err)
-	pods, err := e2edeployment.GetPodsForDeployment(context.Background(), t.client, t.deployment)
-	framework.ExpectNoError(err)
-	// always get first pod as there should only be one
-	t.podName = pods.Items[0].Name
-}
+func (t *TestDeployment) Create() { _ = "STUB: not implemented"; return }
 
-func (t *TestDeployment) WaitForPodReady() {
-	pods, err := e2edeployment.GetPodsForDeployment(context.Background(), t.client, t.deployment)
-	framework.ExpectNoError(err)
-	// always get first pod as there should only be one
-	pod := pods.Items[0]
-	t.podName = pod.Name
-	err = e2epod.WaitForPodRunningInNamespace(context.Background(), t.client, &pod)
-	framework.ExpectNoError(err)
-}
+// always get first pod as there should only be one
+
+func (t *TestDeployment) WaitForPodReady() { _ = "STUB: not implemented"; return }
+
+// always get first pod as there should only be one
 
 func (t *TestDeployment) Exec(command []string, expectedString string) {
-	_, err := e2epodoutput.LookForStringInPodExec(t.namespace.Name, t.podName, command, expectedString, execTimeout)
-	framework.ExpectNoError(err)
+	_ = "STUB: not implemented"
+	return
 }
 
-func (t *TestDeployment) DeletePodAndWait() {
-	framework.Logf("Deleting pod %q in namespace %q", t.podName, t.namespace.Name)
-	err := t.client.CoreV1().Pods(t.namespace.Name).Delete(context.Background(), t.podName, metav1.DeleteOptions{})
-	if err != nil {
-		if !apierrs.IsNotFound(err) {
-			framework.ExpectNoError(fmt.Errorf("pod %q Delete API error: %w", t.podName, err))
-		}
-		return
-	}
-	framework.Logf("Waiting for pod %q in namespace %q to be fully deleted", t.podName, t.namespace.Name)
-	err = e2epod.WaitForPodNotFoundInNamespace(context.Background(), t.client, t.podName, t.namespace.Name, 3*time.Minute)
-	if err != nil {
-		if !apierrs.IsNotFound(err) {
-			framework.ExpectNoError(fmt.Errorf("pod %q error waiting for delete: %w", t.podName, err))
-		}
-	}
-}
+func (t *TestDeployment) DeletePodAndWait() { _ = "STUB: not implemented"; return }
 
-func (t *TestDeployment) Cleanup() {
-	framework.Logf("deleting Deployment %q/%q", t.namespace.Name, t.deployment.Name)
-	body, err := t.Logs()
-	if err != nil {
-		framework.Logf("Error getting logs for pod %s: %v", t.podName, err)
-	} else {
-		framework.Logf("Pod %s has the following logs: %s", t.podName, body)
-	}
-	err = t.client.AppsV1().Deployments(t.namespace.Name).Delete(context.Background(), t.deployment.Name, metav1.DeleteOptions{})
-	framework.ExpectNoError(err)
-}
+func (t *TestDeployment) Cleanup() { _ = "STUB: not implemented"; return }
 
-func (t *TestDeployment) Logs() ([]byte, error) {
-	return podLogs(t.client, t.podName, t.namespace.Name)
-}
+func (t *TestDeployment) Logs() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 // waitForPersistentVolumeClaimDeleted waits for a PersistentVolumeClaim to be removed from the system until timeout occurs, whichever comes first.
 func waitForPersistentVolumeClaimDeleted(c clientset.Interface, ns string, pvcName string, poll, timeout time.Duration) error {
-	framework.Logf("Waiting up to %v for PersistentVolumeClaim %s to be removed", timeout, pvcName)
-	for start := time.Now(); time.Since(start) < timeout; time.Sleep(poll) {
-		_, err := c.CoreV1().PersistentVolumeClaims(ns).Get(context.Background(), pvcName, metav1.GetOptions{})
-		if err != nil {
-			if apierrs.IsNotFound(err) {
-				framework.Logf("Claim %q in namespace %q doesn't exist in the system", pvcName, ns)
-				return nil
-			}
-			framework.Logf("Failed to get claim %q in namespace %q, retrying in %v. Error: %v", pvcName, ns, poll, err)
-		}
-	}
-	return fmt.Errorf("PersistentVolumeClaim %s is not removed from the system within %v", pvcName, timeout)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 type TestPod struct {
@@ -658,50 +276,17 @@ type TestPod struct {
 }
 
 func NewTestPod(c clientset.Interface, ns *v1.Namespace, command string) *TestPod {
-	return &TestPod{
-		client:    c,
-		namespace: ns,
-		pod: &v1.Pod{
-			ObjectMeta: metav1.ObjectMeta{
-				GenerateName: "ebs-volume-tester-",
-			},
-			Spec: v1.PodSpec{
-				Containers: []v1.Container{
-					{
-						Name:         "volume-tester",
-						Image:        imageutils.GetE2EImage(imageutils.BusyBox),
-						Command:      []string{"/bin/sh"},
-						Args:         []string{"-c", command},
-						VolumeMounts: make([]v1.VolumeMount, 0),
-					},
-				},
-				RestartPolicy: v1.RestartPolicyNever,
-				Volumes:       make([]v1.Volume, 0),
-			},
-		},
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (t *TestPod) Create() {
-	var err error
+func (t *TestPod) Create() { _ = "STUB: not implemented"; return }
 
-	t.pod, err = t.client.CoreV1().Pods(t.namespace.Name).Create(context.Background(), t.pod, metav1.CreateOptions{})
-	framework.ExpectNoError(err)
-}
+func (t *TestPod) GetName() string { _ = "STUB: not implemented"; return "" }
 
-func (t *TestPod) GetName() string {
-	return t.pod.Name
-}
+func (t *TestPod) WaitForSuccess() { _ = "STUB: not implemented"; return }
 
-func (t *TestPod) WaitForSuccess() {
-	err := e2epod.WaitForPodSuccessInNamespace(context.Background(), t.client, t.pod.Name, t.namespace.Name)
-	framework.ExpectNoError(err)
-}
-
-func (t *TestPod) WaitForRunning() {
-	err := e2epod.WaitForPodRunningInNamespace(context.Background(), t.client, t.pod)
-	framework.ExpectNoError(err)
-}
+func (t *TestPod) WaitForRunning() { _ = "STUB: not implemented"; return }
 
 // Ideally this would be in "k8s.io/kubernetes/test/e2e/framework"
 // Similar to framework.WaitForPodSuccessInNamespace.
@@ -719,71 +304,33 @@ var podFailedCondition = func(pod *v1.Pod) (bool, error) {
 	}
 }
 
-func (t *TestPod) WaitForFailure() {
-	err := e2epod.WaitForPodCondition(context.Background(), t.client, t.namespace.Name, t.pod.Name, failedConditionDescription, slowPodStartTimeout, podFailedCondition)
-	framework.ExpectNoError(err)
-}
+func (t *TestPod) WaitForFailure() { _ = "STUB: not implemented"; return }
 
 func (t *TestPod) SetupVolume(pvc *v1.PersistentVolumeClaim, name, mountPath string, readOnly bool) {
-	volumeMount := v1.VolumeMount{
-		Name:      name,
-		MountPath: mountPath,
-		ReadOnly:  readOnly,
-	}
-	t.pod.Spec.Containers[0].VolumeMounts = append(t.pod.Spec.Containers[0].VolumeMounts, volumeMount)
-
-	volume := v1.Volume{
-		Name: name,
-		VolumeSource: v1.VolumeSource{
-			PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-				ClaimName: pvc.Name,
-			},
-		},
-	}
-	t.pod.Spec.Volumes = append(t.pod.Spec.Volumes, volume)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (t *TestPod) SetupRawBlockVolume(pvc *v1.PersistentVolumeClaim, name, devicePath string) {
-	volumeDevice := v1.VolumeDevice{
-		Name:       name,
-		DevicePath: devicePath,
-	}
-	t.pod.Spec.Containers[0].VolumeDevices = append(t.pod.Spec.Containers[0].VolumeDevices, volumeDevice)
-
-	volume := v1.Volume{
-		Name: name,
-		VolumeSource: v1.VolumeSource{
-			PersistentVolumeClaim: &v1.PersistentVolumeClaimVolumeSource{
-				ClaimName: pvc.Name,
-			},
-		},
-	}
-	t.pod.Spec.Volumes = append(t.pod.Spec.Volumes, volume)
+	_ = "STUB: not implemented"
+	return
 }
 
 func (t *TestPod) SetNodeSelector(nodeSelector map[string]string) {
-	t.pod.Spec.NodeSelector = nodeSelector
+	_ = "STUB: not implemented"
+	return
 }
 
-func (t *TestPod) Cleanup() {
-	cleanupPodOrFail(t.client, t.pod.Name, t.namespace.Name)
-}
+func (t *TestPod) Cleanup() { _ = "STUB: not implemented"; return }
 
-func (t *TestPod) Logs() ([]byte, error) {
-	return podLogs(t.client, t.pod.Name, t.namespace.Name)
-}
+func (t *TestPod) Logs() ([]byte, error) { _ = "STUB: not implemented"; return nil, nil }
 
 func cleanupPodOrFail(client clientset.Interface, name, namespace string) {
-	framework.Logf("deleting Pod %q/%q", namespace, name)
-	body, err := podLogs(client, name, namespace)
-	if err != nil {
-		framework.Logf("Error getting logs for pod %s: %v", name, err)
-	} else {
-		framework.Logf("Pod %s has the following logs: %s", name, body)
-	}
-	e2epod.DeletePodOrFail(context.Background(), client, namespace, name)
+	_ = "STUB: not implemented"
+	return
 }
 
 func podLogs(client clientset.Interface, name, namespace string) ([]byte, error) {
-	return client.CoreV1().Pods(namespace).GetLogs(name, &v1.PodLogOptions{}).Do(context.Background()).Raw()
+	_ = "STUB: not implemented"
+	return nil, nil
 }

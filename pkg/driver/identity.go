@@ -20,54 +20,20 @@ import (
 	"context"
 
 	csi "github.com/container-storage-interface/spec/lib/go/csi"
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"k8s.io/klog/v2"
 )
 
 func (d *Driver) GetPluginInfo(ctx context.Context, req *csi.GetPluginInfoRequest) (*csi.GetPluginInfoResponse, error) {
-	klog.V(6).InfoS("GetPluginInfo: called", "args", req)
-	resp := &csi.GetPluginInfoResponse{
-		Name:          util.GetDriverName(),
-		VendorVersion: driverVersion,
-	}
-
-	return resp, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *Driver) GetPluginCapabilities(ctx context.Context, req *csi.GetPluginCapabilitiesRequest) (*csi.GetPluginCapabilitiesResponse, error) {
-	klog.V(6).InfoS("GetPluginCapabilities: called", "args", req)
-	resp := &csi.GetPluginCapabilitiesResponse{
-		Capabilities: []*csi.PluginCapability{
-			{
-				Type: &csi.PluginCapability_Service_{
-					Service: &csi.PluginCapability_Service{
-						Type: csi.PluginCapability_Service_CONTROLLER_SERVICE,
-					},
-				},
-			},
-			{
-				Type: &csi.PluginCapability_Service_{
-					Service: &csi.PluginCapability_Service{
-						Type: csi.PluginCapability_Service_VOLUME_ACCESSIBILITY_CONSTRAINTS,
-					},
-				},
-			},
-		},
-	}
-
-	return resp, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *Driver) Probe(ctx context.Context, req *csi.ProbeRequest) (*csi.ProbeResponse, error) {
+	_ = "STUB: not implemented"
 	// Controller Service will make dry-run EC2 call to ensure proper auth/networking
-	if d.controller != nil && d.controller.cloud != nil {
-		err := d.controller.cloud.DryRun(ctx)
-		if err != nil {
-			return &csi.ProbeResponse{}, status.Errorf(codes.FailedPrecondition, "Failed health check (verify network connection and IAM credentials): %v", err)
-		}
-	}
-
-	return &csi.ProbeResponse{}, nil
+	return nil, nil
 }

@@ -44,26 +44,7 @@ type retryManager struct {
 	unbatchableDescribeVolumesModificationsRetryer aws.Retryer
 }
 
-func newRetryManager() *retryManager {
-	return &retryManager{
-		createVolumeRetryer:                            newAdaptiveRetryer(),
-		copyVolumeRetryer:                              newAdaptiveRetryer(),
-		attachVolumeRetryer:                            newAdaptiveRetryer(),
-		deleteVolumeRetryer:                            newAdaptiveRetryer(),
-		detachVolumeRetryer:                            newAdaptiveRetryer(),
-		modifyVolumeRetryer:                            newAdaptiveRetryer(),
-		createSnapshotRetryer:                          newAdaptiveRetryer(),
-		deleteSnapshotRetryer:                          newAdaptiveRetryer(),
-		enableFastSnapshotRestoresRetryer:              newAdaptiveRetryer(),
-		unbatchableDescribeVolumesModificationsRetryer: newAdaptiveRetryer(),
-	}
-}
+func newRetryManager() *retryManager { _ = "STUB: not implemented"; return nil }
 
 // newAdaptiveRetryer restricts attempts of API calls that recently hit throttle errors.
-func newAdaptiveRetryer() *retry.AdaptiveMode {
-	return retry.NewAdaptiveMode(func(ao *retry.AdaptiveModeOptions) {
-		ao.StandardOptions = append(ao.StandardOptions, func(so *retry.StandardOptions) {
-			so.MaxAttempts = retryMaxAttempt
-		})
-	})
-}
+func newAdaptiveRetryer() *retry.AdaptiveMode { _ = "STUB: not implemented"; return nil }

@@ -30,17 +30,6 @@ type DynamicallyProvisionedVolumePropertiesTest struct {
 }
 
 func (t *DynamicallyProvisionedVolumePropertiesTest) Run(c clientset.Interface, ns *v1.Namespace, ebsDriver driver.PVTestDriver) {
-	volumeDetails := CreateVolumeDetails(t.CreateVolumeParameters, t.ClaimSize)
-	testVolume, _ := volumeDetails.SetupDynamicPersistentVolumeClaim(c, ns, ebsDriver)
-	defer testVolume.Cleanup()
-
-	pod := createPodWithVolume(c, ns, "", testVolume, volumeDetails)
-	defer pod.Cleanup()
-	pod.WaitForSuccess()
-
-	By("verifying volume properties")
-	volumeID := testVolume.persistentVolume.Spec.CSI.VolumeHandle
-
-	expected := BuildExpectedParameters(t.CreateVolumeParameters, t.ClaimSize)
-	VerifyVolumeProperties(volumeID, expected)
+	_ = "STUB: not implemented"
+	return
 }

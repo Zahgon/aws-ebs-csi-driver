@@ -59,48 +59,20 @@ type expiringCache[KeyType comparable, ValueType any] struct {
 // New returns a new ExpiringCache
 // for a given KeyType, ValueType, and expiration delay.
 func New[KeyType comparable, ValueType any](expirationDelay time.Duration) ExpiringCache[KeyType, ValueType] {
-	return &expiringCache[KeyType, ValueType]{
-		expirationDelay: expirationDelay,
-		values:          make(map[KeyType]timedValue[ValueType]),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (c *expiringCache[KeyType, ValueType]) Get(key KeyType) (*ValueType, bool) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	if v, ok := c.values[key]; ok {
-		v.timer.Reset(c.expirationDelay)
-		return v.value, true
-	} else {
-		return nil, false
-	}
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 func (c *expiringCache[KeyType, ValueType]) Set(key KeyType, value *ValueType) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	if v, ok := c.values[key]; ok {
-		v.timer.Reset(c.expirationDelay)
-		v.value = value
-		c.values[key] = v
-	} else {
-		c.values[key] = timedValue[ValueType]{
-			timer: time.AfterFunc(c.expirationDelay, func() {
-				c.mutex.Lock()
-				defer c.mutex.Unlock()
-
-				delete(c.values, key)
-			}),
-			value: value,
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func (c *expiringCache[KeyType, ValueType]) Remove(key KeyType) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-	// In the case we call Remove on a key that does not exist delete is a no op
-	delete(c.values, key)
-}
+func (c *expiringCache[KeyType, ValueType]) Remove(key KeyType) { _ = "STUB: not implemented"; return }
+
+// In the case we call Remove on a key that does not exist delete is a no op

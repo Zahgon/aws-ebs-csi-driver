@@ -15,19 +15,8 @@
 package hooks
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"os"
-
 	v1 "k8s.io/api/core/v1"
-	storagev1 "k8s.io/api/storage/v1"
-	k8serrors "k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/tools/cache"
-	"k8s.io/klog/v2"
 )
 
 /*
@@ -55,108 +44,22 @@ var drainTaints = map[string]struct{}{
 	v1beta1KarpenterTaint:     {},
 }
 
-func PreStop(clientset kubernetes.Interface) error {
-	klog.InfoS("PreStop: executing PreStop lifecycle hook")
-
-	nodeName := os.Getenv("CSI_NODE_NAME")
-	if nodeName == "" {
-		return errors.New("PreStop: CSI_NODE_NAME missing")
-	}
-
-	node, err := fetchNode(clientset, nodeName)
-	switch {
-	case k8serrors.IsNotFound(err):
-		klog.InfoS("PreStop: node does not exist - assuming this is a termination event, checking for remaining VolumeAttachments", "node", nodeName)
-	case err != nil:
-		return err
-	case !isNodeBeingDrained(node):
-		klog.InfoS("PreStop: node is not being drained, skipping VolumeAttachments check", "node", nodeName)
-		return nil
-	default:
-		klog.InfoS("PreStop: node is being drained, checking for remaining VolumeAttachments", "node", nodeName)
-	}
-
-	return waitForVolumeAttachments(clientset, nodeName)
-}
+func PreStop(clientset kubernetes.Interface) error { _ = "STUB: not implemented"; return nil }
 
 func fetchNode(clientset kubernetes.Interface, nodeName string) (*v1.Node, error) {
-	node, err := clientset.CoreV1().Nodes().Get(context.Background(), nodeName, metav1.GetOptions{})
-	if err != nil {
-		return nil, fmt.Errorf("fetchNode: failed to retrieve node information: %w", err)
-	}
-	return node, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // isNodeBeingDrained returns true if node resource has a known drain/eviction taint.
-func isNodeBeingDrained(node *v1.Node) bool {
-	for _, taint := range node.Spec.Taints {
-		if _, isDrainTaint := drainTaints[taint.Key]; isDrainTaint {
-			return true
-		}
-	}
-	return false
-}
+func isNodeBeingDrained(node *v1.Node) bool { _ = "STUB: not implemented"; return false }
 
 func waitForVolumeAttachments(clientset kubernetes.Interface, nodeName string) error {
-	allAttachmentsDeleted := make(chan struct{})
-
-	factory := informers.NewSharedInformerFactory(clientset, 0)
-	informer := factory.Storage().V1().VolumeAttachments().Informer()
-
-	_, err := informer.AddEventHandler(cache.ResourceEventHandlerFuncs{
-		DeleteFunc: func(obj any) {
-			klog.V(5).InfoS("DeleteFunc: VolumeAttachment deleted", "node", nodeName)
-			va, ok := obj.(*storagev1.VolumeAttachment)
-			if !ok {
-				klog.Error("DeleteFunc: error asserting object as type VolumeAttachment", "obj", va)
-			}
-			if va.Spec.NodeName == nodeName {
-				if err := checkVolumeAttachments(clientset, nodeName, allAttachmentsDeleted); err != nil {
-					klog.ErrorS(err, "DeleteFunc: error checking VolumeAttachments")
-				}
-			}
-		},
-		UpdateFunc: func(oldObj, newObj any) {
-			klog.V(5).InfoS("UpdateFunc: VolumeAttachment updated", "node", nodeName)
-			va, ok := newObj.(*storagev1.VolumeAttachment)
-			if !ok {
-				klog.Error("UpdateFunc: error asserting object as type VolumeAttachment", "obj", va)
-			}
-			if va.Spec.NodeName == nodeName {
-				if err := checkVolumeAttachments(clientset, nodeName, allAttachmentsDeleted); err != nil {
-					klog.ErrorS(err, "UpdateFunc: error checking VolumeAttachments")
-				}
-			}
-		},
-	})
-	if err != nil {
-		return fmt.Errorf("failed to add event handler to VolumeAttachment informer: %w", err)
-	}
-
-	go informer.Run(allAttachmentsDeleted)
-
-	if err := checkVolumeAttachments(clientset, nodeName, allAttachmentsDeleted); err != nil {
-		klog.ErrorS(err, "waitForVolumeAttachments: error checking VolumeAttachments")
-	}
-
-	<-allAttachmentsDeleted
-	klog.InfoS("waitForVolumeAttachments: finished waiting for VolumeAttachments to be deleted. preStopHook completed")
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func checkVolumeAttachments(clientset kubernetes.Interface, nodeName string, allAttachmentsDeleted chan struct{}) error {
-	allAttachments, err := clientset.StorageV1().VolumeAttachments().List(context.Background(), metav1.ListOptions{})
-	if err != nil {
-		return fmt.Errorf("checkVolumeAttachments: failed to list VolumeAttachments: %w", err)
-	}
-
-	for _, attachment := range allAttachments.Items {
-		if attachment.Spec.NodeName == nodeName {
-			klog.InfoS("isVolumeAttachmentEmpty: not ready to exit, found VolumeAttachment", "attachment", attachment, "node", nodeName)
-			return nil
-		}
-	}
-
-	close(allAttachmentsDeleted)
+	_ = "STUB: not implemented"
 	return nil
 }

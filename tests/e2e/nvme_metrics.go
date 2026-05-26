@@ -17,8 +17,6 @@ package e2e
 import (
 	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"time"
 
 	awscloud "github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud"
@@ -29,7 +27,6 @@ import (
 	. "github.com/onsi/gomega"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/wait"
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/kubernetes/test/e2e/framework"
 	"k8s.io/kubernetes/test/e2e/framework/kubectl"
@@ -140,35 +137,6 @@ var _ = Describe("[ebs-csi-e2e] [single-az] NVMe Metrics", func() {
 })
 
 func getMetricsWithRetry(ctx context.Context) (string, error) {
-	var metricsOutput string
-
-	backoff := wait.Backoff{
-		Duration: 5 * time.Second,
-		Factor:   2.0,
-		Steps:    5,
-	}
-
-	err := wait.ExponentialBackoffWithContext(ctx, backoff, func(ctx context.Context) (bool, error) {
-		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http://localhost:3302/metrics", nil)
-		if err != nil {
-			return false, fmt.Errorf("failed to create request: %w", err)
-		}
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			framework.Logf("Failed to get metrics: %v, retrying...", err)
-			return false, nil
-		}
-		defer resp.Body.Close()
-
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			framework.Logf("Failed to read metrics: %v, retrying...", err)
-			return false, nil
-		}
-
-		metricsOutput = string(body)
-		return true, nil
-	})
-
-	return metricsOutput, err
+	_ = "STUB: not implemented"
+	return "", nil
 }

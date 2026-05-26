@@ -15,73 +15,29 @@
 package template
 
 import (
-	"errors"
-	"fmt"
 	"html/template"
-	"strings"
 )
 
 // Disable functions.
-func html(...any) (string, error) {
-	return "", errors.New("cannot call 'html' function")
-}
+func html(...any) (string, error) { _ = "STUB: not implemented"; return "", nil }
 
-func js(...any) (string, error) {
-	return "", errors.New("cannot call 'js' function")
-}
+func js(...any) (string, error) { _ = "STUB: not implemented"; return "", nil }
 
-func call(...any) (string, error) {
-	return "", errors.New("cannot call 'call' function")
-}
+func call(...any) (string, error) { _ = "STUB: not implemented"; return "", nil }
 
-func urlquery(...any) (string, error) {
-	return "", errors.New("cannot call 'urlquery' function")
-}
+func urlquery(...any) (string, error) { _ = "STUB: not implemented"; return "", nil }
 
-func contains(arg1, arg2 string) bool {
-	return strings.Contains(arg2, arg1)
-}
+func contains(arg1, arg2 string) bool { _ = "STUB: not implemented"; return false }
 
-func substring(start, end int, arg string) string {
-	if start < 0 {
-		return arg[:end]
-	}
-
-	if end < 0 || end > len(arg) {
-		return arg[start:]
-	}
-
-	return arg[start:end]
-}
+func substring(start, end int, arg string) string { _ = "STUB: not implemented"; return "" }
 
 func field(delim string, idx int, arg string) (string, error) {
-	w := strings.Split(arg, delim)
-	if idx >= len(w) {
-		return "", fmt.Errorf("extractWord: cannot index into split string; index = %d, length = %d", idx, len(w))
-	}
-	return w[idx], nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
-func index(arg1, arg2 string) int {
-	return strings.Index(arg2, arg1)
-}
+func index(arg1, arg2 string) int { _ = "STUB: not implemented"; return 0 }
 
-func lastIndex(arg1, arg2 string) int {
-	return strings.LastIndex(arg2, arg1)
-}
+func lastIndex(arg1, arg2 string) int { _ = "STUB: not implemented"; return 0 }
 
-func newFuncMap() template.FuncMap {
-	return template.FuncMap{
-		"html":      html,
-		"js":        js,
-		"call":      call,
-		"urlquery":  urlquery,
-		"contains":  contains,
-		"toUpper":   strings.ToUpper,
-		"toLower":   strings.ToLower,
-		"substring": substring,
-		"field":     field,
-		"index":     index,
-		"lastIndex": lastIndex,
-	}
-}
+func newFuncMap() template.FuncMap { _ = "STUB: not implemented"; return *new(template.FuncMap) }

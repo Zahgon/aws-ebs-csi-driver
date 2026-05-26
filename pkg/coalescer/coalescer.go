@@ -19,8 +19,6 @@ package coalescer
 
 import (
 	"time"
-
-	"k8s.io/klog/v2"
 )
 
 // Coalescer is an interface to combine multiple requests made over a period of time into a single request
@@ -50,17 +48,8 @@ func New[InputType any, ResultType any](delay time.Duration,
 	mergeFunction func(input InputType, existing InputType) (InputType, error),
 	executeFunction func(key string, input InputType) (ResultType, error),
 ) Coalescer[InputType, ResultType] {
-	c := coalescer[InputType, ResultType]{
-		delay:           delay,
-		mergeFunction:   mergeFunction,
-		executeFunction: executeFunction,
-		inputChannel:    make(chan newInput[InputType, ResultType]),
-		timerChannel:    make(chan string),
-		pendingInputs:   make(map[string]pendingInput[InputType, ResultType]),
-	}
-
-	go c.coalescerThread()
-	return &c
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Type to store a result or error in channels.
@@ -95,71 +84,8 @@ type coalescer[InputType any, ResultType any] struct {
 }
 
 func (c *coalescer[InputType, ResultType]) Coalesce(key string, input InputType) (ResultType, error) {
-	resultChannel := make(chan result[ResultType])
-
-	c.inputChannel <- newInput[InputType, ResultType]{
-		key:           key,
-		input:         input,
-		resultChannel: resultChannel,
-	}
-	result := <-resultChannel
-
-	if result.err != nil {
-		return *new(ResultType), result.err
-	} else {
-		return result.result, nil
-	}
+	_ = "STUB: not implemented"
+	return *new(ResultType), nil
 }
 
-func (c *coalescer[InputType, ResultType]) coalescerThread() {
-	for {
-		select {
-		case i := <-c.inputChannel:
-			klog.V(7).InfoS("coalescerThread: Input received", "key", i.key, "input", i.input)
-			if pending, ok := c.pendingInputs[i.key]; ok {
-				klog.V(7).InfoS("coalescerThread: Input matched existing input, attempting to merge", "key", i.key)
-				newInput, err := c.mergeFunction(i.input, pending.input)
-
-				if err == nil {
-					klog.V(7).InfoS("coalescerThread: Merged input into existing inputs", "key", i.key)
-					pending.input = newInput
-					pending.resultChannels = append(pending.resultChannels, i.resultChannel)
-					c.pendingInputs[i.key] = pending
-				} else {
-					klog.V(7).InfoS("coalescerThread: Failed to merge inputs into existing inputs", "key", i.key)
-					i.resultChannel <- result[ResultType]{
-						err: err,
-					}
-				}
-			} else {
-				klog.V(7).InfoS("coalescerThread: New input, setting up fresh coalesce operation", "key", i.key)
-				c.pendingInputs[i.key] = pendingInput[InputType, ResultType]{
-					input: i.input,
-					resultChannels: []chan result[ResultType]{
-						i.resultChannel,
-					},
-				}
-				time.AfterFunc(c.delay, func() {
-					c.timerChannel <- i.key
-				})
-			}
-
-		case k := <-c.timerChannel:
-			klog.V(7).InfoS("coalescerThread: Coalescing delay reached, spawning execution thread", "key", k)
-			pending := c.pendingInputs[k]
-			delete(c.pendingInputs, k)
-
-			go func() {
-				r, err := c.executeFunction(k, pending.input)
-				klog.V(7).InfoS("coalescerThread: Finished executing", "key", k, "result", r, "error", err)
-				result := result[ResultType]{
-					result: r,
-					err:    err,
-				}
-				for _, c := range pending.resultChannels {
-					c <- result
-				}
-			}()
-		}
-	}
-}
+func (c *coalescer[InputType, ResultType]) coalescerThread() { _ = "STUB: not implemented"; return }

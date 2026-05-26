@@ -26,42 +26,25 @@ type fakeMetadataService struct {
 }
 
 func newFakeMetadataService(id string, r string, az string, oa arn.ARN) *fakeMetadataService {
-	return &fakeMetadataService{
-		instanceID:       id,
-		region:           r,
-		availabilityZone: az,
-		outpostArn:       oa,
-	}
-}
-
-func (m *fakeMetadataService) UpdateMetadata() error {
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func (m *fakeMetadataService) GetInstanceID() string {
-	return m.instanceID
-}
+func (m *fakeMetadataService) UpdateMetadata() error { _ = "STUB: not implemented"; return nil }
 
-func (m *fakeMetadataService) GetInstanceType() string {
-	return ""
-}
+func (m *fakeMetadataService) GetInstanceID() string { _ = "STUB: not implemented"; return "" }
 
-func (m *fakeMetadataService) GetRegion() string {
-	return m.region
-}
+func (m *fakeMetadataService) GetInstanceType() string { _ = "STUB: not implemented"; return "" }
 
-func (m *fakeMetadataService) GetAvailabilityZone() string {
-	return m.availabilityZone
-}
+func (m *fakeMetadataService) GetRegion() string { _ = "STUB: not implemented"; return "" }
 
-func (m *fakeMetadataService) GetNumAttachedENIs() int {
-	return 0
-}
+func (m *fakeMetadataService) GetAvailabilityZone() string { _ = "STUB: not implemented"; return "" }
 
-func (m *fakeMetadataService) GetNumBlockDeviceMappings() int {
-	return 0
-}
+func (m *fakeMetadataService) GetNumAttachedENIs() int { _ = "STUB: not implemented"; return 0 }
+
+func (m *fakeMetadataService) GetNumBlockDeviceMappings() int { _ = "STUB: not implemented"; return 0 }
 
 func (m *fakeMetadataService) GetOutpostArn() arn.ARN {
-	return m.outpostArn
+	_ = "STUB: not implemented"
+	return *new(arn.ARN)
 }

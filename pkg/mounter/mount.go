@@ -69,17 +69,6 @@ type NodeMounter struct {
 
 // NewNodeMounter returns a new intsance of NodeMounter.
 func NewNodeMounter(hostprocess bool) (Mounter, error) {
-	var safeMounter *mountutils.SafeFormatAndMount
-	var err error
-
-	if hostprocess {
-		safeMounter, err = NewSafeMounterV2()
-	} else {
-		safeMounter, err = NewSafeMounter()
-	}
-
-	if err != nil {
-		return nil, err
-	}
-	return &NodeMounter{safeMounter}, nil
+	_ = "STUB: not implemented"
+	return *new(Mounter), nil
 }

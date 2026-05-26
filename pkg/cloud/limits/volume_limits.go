@@ -14,8 +14,6 @@
 
 package limits
 
-import "github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
-
 // Instance types for where the API incorrectly returns shared
 // when they actually are dedicated attachment limits.
 var dedicatedInstances = map[string]struct{}{
@@ -53,41 +51,21 @@ var dedicatedInstances = map[string]struct{}{
 // Returns (limit, attachmentType) where limit is the maximum number of volumes
 // and attachmentType is either "shared" or "dedicated".
 func GetVolumeLimits(instanceType string) (int, string) {
+	_ = "STUB: not implemented"
 	// Check non-nitro instances first (limit of 39)
 	// The API calls these shared, but we treat them as dedicated
-	if _, exists := nonNitroInstanceTypes[instanceType]; exists {
-		return 39, util.AttachmentDedicated
-	}
-
-	// Check volume limits table
-	if limit, exists := volumeLimits[instanceType]; exists {
-		// These instance types have the wrong type in the API, hardcode them as dedicated
-		if _, shouldBeDedicated := dedicatedInstances[instanceType]; shouldBeDedicated {
-			limit.attachmentType = util.AttachmentDedicated
-		}
-		return limit.maxAttachments, limit.attachmentType
-	}
-
-	// Default to shared limit of 27
-	return 27, util.AttachmentShared
+	return 0, ""
 }
+
+// Check volume limits table
+
+// These instance types have the wrong type in the API, hardcode them as dedicated
+
+// Default to shared limit of 27
 
 // KnownInstanceTypes returns all known instance types from the limits table.
-func KnownInstanceTypes() []string {
-	knownTypes := []string{}
-
-	for instanceType := range volumeLimits {
-		knownTypes = append(knownTypes, instanceType)
-	}
-
-	return knownTypes
-}
+func KnownInstanceTypes() []string { _ = "STUB: not implemented"; return nil }
 
 // GetCardCount returns the number of EBS cards for a given instance type.
 // Returns 1 (the default) if the instance type is not in the table.
-func GetCardCount(instanceType string) int {
-	if count, exists := ebsCardCounts[instanceType]; exists {
-		return count
-	}
-	return 1
-}
+func GetCardCount(instanceType string) int { _ = "STUB: not implemented"; return 0 }

@@ -16,12 +16,6 @@ limitations under the License.
 
 package driver
 
-import (
-	"encoding/json"
-	"fmt"
-	"runtime"
-)
-
 // These are set during build time via -ldflags.
 var (
 	driverVersion string
@@ -38,22 +32,6 @@ type VersionInfo struct {
 	Platform      string `json:"platform"`
 }
 
-func GetVersion() VersionInfo {
-	return VersionInfo{
-		DriverVersion: driverVersion,
-		GitCommit:     gitCommit,
-		BuildDate:     buildDate,
-		GoVersion:     runtime.Version(),
-		Compiler:      runtime.Compiler,
-		Platform:      fmt.Sprintf("%s/%s", runtime.GOOS, runtime.GOARCH),
-	}
-}
+func GetVersion() VersionInfo { _ = "STUB: not implemented"; return *new(VersionInfo) }
 
-func GetVersionJSON() (string, error) {
-	info := GetVersion()
-	marshalled, err := json.MarshalIndent(&info, "", "  ")
-	if err != nil {
-		return "", err
-	}
-	return string(marshalled), nil
-}
+func GetVersionJSON() (string, error) { _ = "STUB: not implemented"; return "", nil }

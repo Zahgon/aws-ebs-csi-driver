@@ -18,21 +18,10 @@ package driver
 
 import (
 	"context"
-	"errors"
-	"fmt"
-	"maps"
-	"reflect"
-	"strconv"
-	"strings"
-	"time"
 
 	"github.com/awslabs/volume-modifier-for-k8s/pkg/rpc"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/coalescer"
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util/template"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-	"k8s.io/klog/v2"
 )
 
 const (
@@ -59,193 +48,44 @@ func (d *ControllerService) GetCSIDriverModificationCapability(
 	_ context.Context,
 	_ *rpc.GetCSIDriverModificationCapabilityRequest,
 ) (*rpc.GetCSIDriverModificationCapabilityResponse, error) {
-	return &rpc.GetCSIDriverModificationCapabilityResponse{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *ControllerService) ModifyVolumeProperties(
 	ctx context.Context,
 	req *rpc.ModifyVolumePropertiesRequest,
 ) (*rpc.ModifyVolumePropertiesResponse, error) {
-	klog.V(4).InfoS("ModifyVolumeProperties called", "req", req)
-	name := req.GetName()
-	if name == "" {
-		return nil, status.Error(codes.InvalidArgument, "Volume name not provided")
-	}
-
-	options, err := parseModifyVolumeParameters(req.GetParameters())
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = d.modifyVolumeCoalescer.Coalesce(name, *options)
-	if err != nil {
-		return nil, err
-	}
-
-	return &rpc.ModifyVolumePropertiesResponse{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func newModifyVolumeCoalescer(c cloud.Cloud, o *Options) coalescer.Coalescer[modifyVolumeRequest, int32] {
-	return coalescer.New[modifyVolumeRequest, int32](o.ModifyVolumeRequestHandlerTimeout, mergeModifyVolumeRequest, executeModifyVolumeRequest(c))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func mergeModifyVolumeRequest(input modifyVolumeRequest, existing modifyVolumeRequest) (modifyVolumeRequest, error) {
-	if input.newSize != 0 {
-		if existing.newSize != 0 && input.newSize != existing.newSize {
-			return existing, fmt.Errorf("different size was requested by a previous request. Current: %d, Requested: %d", existing.newSize, input.newSize)
-		}
-		existing.newSize = input.newSize
-	}
-	if input.modifyDiskOptions.IOPS != 0 {
-		if existing.modifyDiskOptions.IOPS != 0 && input.modifyDiskOptions.IOPS != existing.modifyDiskOptions.IOPS {
-			return existing, fmt.Errorf("different IOPS was requested by a previous request. Current: %d, Requested: %d", existing.modifyDiskOptions.IOPS, input.modifyDiskOptions.IOPS)
-		}
-		existing.modifyDiskOptions.IOPS = input.modifyDiskOptions.IOPS
-	}
-	if input.modifyDiskOptions.Throughput != 0 {
-		if existing.modifyDiskOptions.Throughput != 0 && input.modifyDiskOptions.Throughput != existing.modifyDiskOptions.Throughput {
-			return existing, fmt.Errorf("different throughput was requested by a previous request. Current: %d, Requested: %d", existing.modifyDiskOptions.Throughput, input.modifyDiskOptions.Throughput)
-		}
-		existing.modifyDiskOptions.Throughput = input.modifyDiskOptions.Throughput
-	}
-	if input.modifyDiskOptions.VolumeType != "" {
-		if existing.modifyDiskOptions.VolumeType != "" && input.modifyDiskOptions.VolumeType != existing.modifyDiskOptions.VolumeType {
-			return existing, fmt.Errorf("different volume type was requested by a previous request. Current: %s, Requested: %s", existing.modifyDiskOptions.VolumeType, input.modifyDiskOptions.VolumeType)
-		}
-		existing.modifyDiskOptions.VolumeType = input.modifyDiskOptions.VolumeType
-	}
-	if len(input.modifyTagsOptions.TagsToAdd) > 0 || len(input.modifyTagsOptions.TagsToDelete) > 0 {
-		if (len(existing.modifyTagsOptions.TagsToAdd) > 0 || len(existing.modifyTagsOptions.TagsToDelete) > 0) && !(reflect.DeepEqual(input.modifyTagsOptions, existing.modifyTagsOptions)) {
-			return existing, fmt.Errorf("different tags were requested by a previous request. Current: %v, Requested: %v", existing.modifyTagsOptions, input.modifyTagsOptions)
-		}
-		existing.modifyTagsOptions = cloud.ModifyTagsOptions{
-			TagsToAdd:    input.modifyTagsOptions.TagsToAdd,
-			TagsToDelete: input.modifyTagsOptions.TagsToDelete,
-		}
-	}
-	return existing, nil
+	_ = "STUB: not implemented"
+	return *new(modifyVolumeRequest), nil
 }
 
 func executeModifyTagsRequest(volumeID string, options modifyVolumeRequest, c cloud.Cloud, ctx context.Context) error {
-	if len(options.modifyTagsOptions.TagsToAdd) > 0 || len(options.modifyTagsOptions.TagsToDelete) > 0 {
-		err := c.ModifyTags(ctx, volumeID, options.modifyTagsOptions)
-		if err != nil {
-			if errors.Is(err, cloud.ErrInvalidArgument) {
-				return status.Errorf(codes.InvalidArgument, "Could not modify volume tags (invalid argument) %q: %v", volumeID, err)
-			}
-			return status.Errorf(codes.Internal, "Could not modify volume tags %q: %v", volumeID, err)
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func executeModifyVolumeRequest(c cloud.Cloud) func(string, modifyVolumeRequest) (int32, error) {
-	return func(volumeID string, req modifyVolumeRequest) (int32, error) {
-		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-		defer cancel()
-		err := executeModifyTagsRequest(volumeID, req, c, ctx)
-		if err != nil {
-			return 0, err
-		}
-
-		if (req.modifyDiskOptions.IOPS != 0) || (req.modifyDiskOptions.Throughput != 0) || (req.modifyDiskOptions.VolumeType != "") || (req.newSize != 0) || (req.modifyDiskOptions.IOPSPerGB != 0) {
-			actualSizeGiB, err := c.ResizeOrModifyDisk(ctx, volumeID, req.newSize, &req.modifyDiskOptions)
-			if err != nil {
-				switch {
-				case errors.Is(err, cloud.ErrInvalidArgument):
-					// Returning Internal error instead of InvaliArgument because at this point any tag modifications have succeeded.
-					// It would not be correct to return an error that is considered infeasible by the resizer if the volume was already modified in any way.
-					if len(req.modifyTagsOptions.TagsToAdd) > 0 || len(req.modifyTagsOptions.TagsToDelete) > 0 {
-						return 0, status.Errorf(codes.Internal, "Could not modify volume (invalid argument) %q: %v", volumeID, err)
-					}
-					return 0, status.Errorf(codes.InvalidArgument, "Could not modify volume (invalid argument) %q: %v", volumeID, err)
-				case errors.Is(err, cloud.ErrNotFound):
-					return 0, status.Errorf(codes.NotFound, "Could not modify volume (not found) %q: %v", volumeID, err)
-				case errors.Is(err, cloud.ErrLimitExceeded):
-					return 0, status.Errorf(codes.ResourceExhausted, "Could not modify volume (resource exhausted) %q: %v", volumeID, err)
-				default:
-					return 0, status.Errorf(codes.Internal, "Could not modify volume %q: %v", volumeID, err)
-				}
-			} else {
-				return actualSizeGiB, nil
-			}
-		}
-		// No change to the volume was requested, so return an empty result with no error
-		return 0, nil
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
+// Returning Internal error instead of InvaliArgument because at this point any tag modifications have succeeded.
+// It would not be correct to return an error that is considered infeasible by the resizer if the volume was already modified in any way.
+
+// No change to the volume was requested, so return an empty result with no error
+
 func parseModifyVolumeParameters(params map[string]string) (*modifyVolumeRequest, error) {
-	options := modifyVolumeRequest{
-		modifyTagsOptions: cloud.ModifyTagsOptions{
-			TagsToAdd:    make(map[string]string),
-			TagsToDelete: make([]string, 0),
-		},
-	}
-	var rawTagsToAdd []string
-	var noValidationTags = make(map[string]string)
-	tProps := new(template.PVProps)
-	for key, value := range params {
-		switch key {
-		case ModificationKeyIOPS:
-			iops, err := strconv.ParseInt(value, 10, 32)
-			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "Could not parse IOPS: %q", value)
-			}
-			options.modifyDiskOptions.IOPS = int32(iops)
-		case ModificationKeyThroughput:
-			throughput, err := strconv.ParseInt(value, 10, 32)
-			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "Could not parse throughput: %q", value)
-			}
-			options.modifyDiskOptions.Throughput = int32(throughput)
-		case DeprecatedModificationKeyVolumeType:
-			if _, ok := params[ModificationKeyVolumeType]; ok {
-				klog.Infof("Ignoring deprecated key `volumeType` because preferred key `type` is present")
-				continue
-			}
-			klog.InfoS("Key `volumeType` is deprecated, please use `type` instead")
-			options.modifyDiskOptions.VolumeType = value
-		case ModificationKeyVolumeType:
-			options.modifyDiskOptions.VolumeType = value
-		case IopsPerGBKey:
-			noValidationTags[cloud.IOPSPerGBKey] = value
-			iopsPerGb, err := strconv.ParseInt(value, 10, 32)
-			if err != nil {
-				return nil, status.Errorf(codes.InvalidArgument, "Could not parse IopsPerGb: %q", value)
-			}
-			options.modifyDiskOptions.IOPSPerGB = int32(iopsPerGb)
-		case AllowAutoIOPSIncreaseOnModifyKey:
-			noValidationTags[cloud.AllowAutoIOPSIncreaseOnModifyKey] = value
-			options.modifyDiskOptions.AllowIopsIncreaseOnResize = isTrue(value)
-		case PVCNameKey:
-			tProps.PVCName = value
-		case PVCNamespaceKey:
-			tProps.PVCNamespace = value
-		case PVNameKey:
-			tProps.PVName = value
-		default:
-			switch {
-			case strings.HasPrefix(key, ModificationAddTag):
-				rawTagsToAdd = append(rawTagsToAdd, value)
-			case strings.HasPrefix(key, ModificationDeleteTag):
-				if err := validateExtraTags(map[string]string{value: ""}, false); err != nil {
-					return nil, status.Errorf(codes.InvalidArgument, "Cannot delete reserved tag: %v", err)
-				}
-				options.modifyTagsOptions.TagsToDelete = append(options.modifyTagsOptions.TagsToDelete, value)
-			default:
-				return nil, status.Errorf(codes.InvalidArgument, "Invalid mutable parameter key: %s", key)
-			}
-		}
-	}
-	addTags, err := template.Evaluate(rawTagsToAdd, tProps, false)
-	if err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Error interpolating tag value: %v", err)
-	}
-	if err := validateExtraTags(addTags, false); err != nil {
-		return nil, status.Errorf(codes.InvalidArgument, "Invalid tag value: %v", err)
-	}
-	maps.Copy(addTags, noValidationTags)
-	options.modifyTagsOptions.TagsToAdd = addTags
-	return &options, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

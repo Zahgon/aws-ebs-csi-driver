@@ -24,7 +24,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/google/uuid"
 	volumesnapshotv1 "github.com/kubernetes-csi/external-snapshotter/client/v4/apis/volumesnapshot/v1"
 	awscloud "github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud"
 	ebscsidriver "github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/driver"
@@ -42,21 +41,11 @@ const testTagNamePrefix = "testTag"
 const testTagValue = "3.1415926"
 
 // generateTagName appends a random uuid to tag name to prevent clashes on parallel e2e test runs on shared cluster.
-func generateTagName() string {
-	return testTagNamePrefix + uuid.NewString()[:8]
-}
+func generateTagName() string { _ = "STUB: not implemented"; return "" }
 
 func validateEc2Snapshot(ctx context.Context, ec2Client *ec2.Client, input *ec2.DescribeSnapshotsInput) *ec2.DescribeSnapshotsOutput {
-	describeResult, err := ec2Client.DescribeSnapshots(ctx, input)
-	if err != nil {
-		Fail(fmt.Sprintf("failed to describe snapshot: %v", err))
-	}
-
-	if len(describeResult.Snapshots) != 1 {
-		Fail(fmt.Sprintf("expected 1 snapshot, got %d", len(describeResult.Snapshots)))
-	}
-
-	return describeResult
+	_ = "STUB: not implemented"
+	return nil
 }
 
 var _ = Describe("[ebs-csi-e2e] [single-az] [requires-aws-api] Dynamic Provisioning", func() {

@@ -59,65 +59,103 @@ func (b *sageMakerClientBase) init(cfg aws.Config, optFns ...func(*sagemaker.Opt
 // EC2API stub functions.
 
 func (b *ec2ClientBase) DescribeVolumes(ctx context.Context, params *ec2.DescribeVolumesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesOutput, error) {
-	return b.client.DescribeVolumes(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DescribeVolumeStatus(ctx context.Context, params *ec2.DescribeVolumeStatusInput, optFns ...func(options *ec2.Options)) (*ec2.DescribeVolumeStatusOutput, error) {
-	return b.client.DescribeVolumeStatus(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) CreateVolume(ctx context.Context, params *ec2.CreateVolumeInput, optFns ...func(*ec2.Options)) (*ec2.CreateVolumeOutput, error) {
-	return b.client.CreateVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) CopyVolumes(ctx context.Context, params *ec2.CopyVolumesInput, optFns ...func(*ec2.Options)) (*ec2.CopyVolumesOutput, error) {
-	return b.client.CopyVolumes(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DeleteVolume(ctx context.Context, params *ec2.DeleteVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVolumeOutput, error) {
-	return b.client.DeleteVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) AttachVolume(ctx context.Context, params *ec2.AttachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.AttachVolumeOutput, error) {
-	return b.client.AttachVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DetachVolume(ctx context.Context, params *ec2.DetachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DetachVolumeOutput, error) {
-	return b.client.DetachVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DescribeInstances(ctx context.Context, params *ec2.DescribeInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstancesOutput, error) {
-	return b.client.DescribeInstances(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DescribeAvailabilityZones(ctx context.Context, params *ec2.DescribeAvailabilityZonesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAvailabilityZonesOutput, error) {
-	return b.client.DescribeAvailabilityZones(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) CreateSnapshot(ctx context.Context, params *ec2.CreateSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.CreateSnapshotOutput, error) {
-	return b.client.CreateSnapshot(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DeleteSnapshot(ctx context.Context, params *ec2.DeleteSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSnapshotOutput, error) {
-	return b.client.DeleteSnapshot(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DescribeSnapshots(ctx context.Context, params *ec2.DescribeSnapshotsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotsOutput, error) {
-	return b.client.DescribeSnapshots(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) ModifyVolume(ctx context.Context, params *ec2.ModifyVolumeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVolumeOutput, error) {
-	return b.client.ModifyVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DescribeVolumesModifications(ctx context.Context, params *ec2.DescribeVolumesModificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesModificationsOutput, error) {
-	return b.client.DescribeVolumesModifications(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DescribeTags(ctx context.Context, params *ec2.DescribeTagsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTagsOutput, error) {
-	return b.client.DescribeTags(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) CreateTags(ctx context.Context, params *ec2.CreateTagsInput, optFns ...func(*ec2.Options)) (*ec2.CreateTagsOutput, error) {
-	return b.client.CreateTags(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) DeleteTags(ctx context.Context, params *ec2.DeleteTagsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTagsOutput, error) {
-	return b.client.DeleteTags(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *ec2ClientBase) EnableFastSnapshotRestores(ctx context.Context, params *ec2.EnableFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.EnableFastSnapshotRestoresOutput, error) {
-	return b.client.EnableFastSnapshotRestores(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // SagmeMakerAPI stub functions.
 
 func (b *sageMakerClientBase) AttachClusterNodeVolume(ctx context.Context, params *sagemaker.AttachClusterNodeVolumeInput, optFns ...func(*sagemaker.Options)) (*sagemaker.AttachClusterNodeVolumeOutput, error) {
-	return b.client.AttachClusterNodeVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (b *sageMakerClientBase) DetachClusterNodeVolume(ctx context.Context, params *sagemaker.DetachClusterNodeVolumeInput, optFns ...func(*sagemaker.Options)) (*sagemaker.DetachClusterNodeVolumeOutput, error) {
-	return b.client.DetachClusterNodeVolume(ctx, params, optFns...)
+	_ = "STUB: not implemented"
+	return nil, nil
 }

@@ -18,7 +18,6 @@ import (
 	volumesnapshotv1 "github.com/kubernetes-csi/external-snapshotter/client/v4/apis/volumesnapshot/v1"
 	v1 "k8s.io/api/core/v1"
 	storagev1 "k8s.io/api/storage/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 const (
@@ -58,39 +57,11 @@ func getStorageClass(
 	bindingMode *storagev1.VolumeBindingMode,
 	allowedTopologies []v1.TopologySelectorTerm,
 ) *storagev1.StorageClass {
-	if reclaimPolicy == nil {
-		defaultReclaimPolicy := v1.PersistentVolumeReclaimDelete
-		reclaimPolicy = &defaultReclaimPolicy
-	}
-	if bindingMode == nil {
-		defaultBindingMode := storagev1.VolumeBindingImmediate
-		bindingMode = &defaultBindingMode
-	}
-	return &storagev1.StorageClass{
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: generateName,
-		},
-		Provisioner:          provisioner,
-		Parameters:           parameters,
-		MountOptions:         mountOptions,
-		ReclaimPolicy:        reclaimPolicy,
-		VolumeBindingMode:    bindingMode,
-		AllowedTopologies:    allowedTopologies,
-		AllowVolumeExpansion: volumeExpansion,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func getVolumeSnapshotClass(generateName string, provisioner string, parameters map[string]string) *volumesnapshotv1.VolumeSnapshotClass {
-	return &volumesnapshotv1.VolumeSnapshotClass{
-		TypeMeta: metav1.TypeMeta{
-			Kind:       VolumeSnapshotClassKind,
-			APIVersion: SnapshotAPIVersion,
-		},
-		ObjectMeta: metav1.ObjectMeta{
-			GenerateName: generateName,
-		},
-		Driver:         provisioner,
-		DeletionPolicy: volumesnapshotv1.VolumeSnapshotContentDelete,
-		Parameters:     parameters,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }

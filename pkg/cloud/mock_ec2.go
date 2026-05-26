@@ -6,7 +6,6 @@ package cloud
 
 import (
 	context "context"
-	reflect "reflect"
 
 	ec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
 	gomock "github.com/golang/mock/gomock"
@@ -24,413 +23,251 @@ type MockEC2APIMockRecorder struct {
 }
 
 // NewMockEC2API creates a new mock instance.
-func NewMockEC2API(ctrl *gomock.Controller) *MockEC2API {
-	mock := &MockEC2API{ctrl: ctrl}
-	mock.recorder = &MockEC2APIMockRecorder{mock}
-	return mock
-}
+func NewMockEC2API(ctrl *gomock.Controller) *MockEC2API { _ = "STUB: not implemented"; return nil }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockEC2API) EXPECT() *MockEC2APIMockRecorder {
-	return m.recorder
+	_ = "STUB: not implemented"
+
+	// AttachVolume mocks base method.
+	return nil
 }
 
-// AttachVolume mocks base method.
 func (m *MockEC2API) AttachVolume(ctx context.Context, params *ec2.AttachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.AttachVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "AttachVolume", varargs...)
-	ret0, _ := ret[0].(*ec2.AttachVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // AttachVolume indicates an expected call of AttachVolume.
 func (mr *MockEC2APIMockRecorder) AttachVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachVolume", reflect.TypeOf((*MockEC2API)(nil).AttachVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CopyVolumes mocks base method.
 func (m *MockEC2API) CopyVolumes(ctx context.Context, params *ec2.CopyVolumesInput, optFns ...func(*ec2.Options)) (*ec2.CopyVolumesOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "CopyVolumes", varargs...)
-	ret0, _ := ret[0].(*ec2.CopyVolumesOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CopyVolumes indicates an expected call of CopyVolumes.
 func (mr *MockEC2APIMockRecorder) CopyVolumes(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CopyVolumes", reflect.TypeOf((*MockEC2API)(nil).CopyVolumes), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CreateSnapshot mocks base method.
 func (m *MockEC2API) CreateSnapshot(ctx context.Context, params *ec2.CreateSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.CreateSnapshotOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "CreateSnapshot", varargs...)
-	ret0, _ := ret[0].(*ec2.CreateSnapshotOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CreateSnapshot indicates an expected call of CreateSnapshot.
 func (mr *MockEC2APIMockRecorder) CreateSnapshot(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSnapshot", reflect.TypeOf((*MockEC2API)(nil).CreateSnapshot), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CreateTags mocks base method.
 func (m *MockEC2API) CreateTags(ctx context.Context, params *ec2.CreateTagsInput, optFns ...func(*ec2.Options)) (*ec2.CreateTagsOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "CreateTags", varargs...)
-	ret0, _ := ret[0].(*ec2.CreateTagsOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CreateTags indicates an expected call of CreateTags.
 func (mr *MockEC2APIMockRecorder) CreateTags(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateTags", reflect.TypeOf((*MockEC2API)(nil).CreateTags), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CreateVolume mocks base method.
 func (m *MockEC2API) CreateVolume(ctx context.Context, params *ec2.CreateVolumeInput, optFns ...func(*ec2.Options)) (*ec2.CreateVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "CreateVolume", varargs...)
-	ret0, _ := ret[0].(*ec2.CreateVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CreateVolume indicates an expected call of CreateVolume.
 func (mr *MockEC2APIMockRecorder) CreateVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateVolume", reflect.TypeOf((*MockEC2API)(nil).CreateVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DeleteSnapshot mocks base method.
 func (m *MockEC2API) DeleteSnapshot(ctx context.Context, params *ec2.DeleteSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.DeleteSnapshotOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DeleteSnapshot", varargs...)
-	ret0, _ := ret[0].(*ec2.DeleteSnapshotOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DeleteSnapshot indicates an expected call of DeleteSnapshot.
 func (mr *MockEC2APIMockRecorder) DeleteSnapshot(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSnapshot", reflect.TypeOf((*MockEC2API)(nil).DeleteSnapshot), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DeleteTags mocks base method.
 func (m *MockEC2API) DeleteTags(ctx context.Context, params *ec2.DeleteTagsInput, optFns ...func(*ec2.Options)) (*ec2.DeleteTagsOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DeleteTags", varargs...)
-	ret0, _ := ret[0].(*ec2.DeleteTagsOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DeleteTags indicates an expected call of DeleteTags.
 func (mr *MockEC2APIMockRecorder) DeleteTags(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteTags", reflect.TypeOf((*MockEC2API)(nil).DeleteTags), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DeleteVolume mocks base method.
 func (m *MockEC2API) DeleteVolume(ctx context.Context, params *ec2.DeleteVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DeleteVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DeleteVolume", varargs...)
-	ret0, _ := ret[0].(*ec2.DeleteVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DeleteVolume indicates an expected call of DeleteVolume.
 func (mr *MockEC2APIMockRecorder) DeleteVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteVolume", reflect.TypeOf((*MockEC2API)(nil).DeleteVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeAvailabilityZones mocks base method.
 func (m *MockEC2API) DescribeAvailabilityZones(ctx context.Context, params *ec2.DescribeAvailabilityZonesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeAvailabilityZonesOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeAvailabilityZones", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeAvailabilityZonesOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeAvailabilityZones indicates an expected call of DescribeAvailabilityZones.
 func (mr *MockEC2APIMockRecorder) DescribeAvailabilityZones(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeAvailabilityZones", reflect.TypeOf((*MockEC2API)(nil).DescribeAvailabilityZones), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeInstanceTypes mocks base method.
 func (m *MockEC2API) DescribeInstanceTypes(ctx context.Context, params *ec2.DescribeInstanceTypesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstanceTypesOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeInstanceTypes", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeInstanceTypesOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeInstanceTypes indicates an expected call of DescribeInstanceTypes.
 func (mr *MockEC2APIMockRecorder) DescribeInstanceTypes(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeInstanceTypes", reflect.TypeOf((*MockEC2API)(nil).DescribeInstanceTypes), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeInstances mocks base method.
 func (m *MockEC2API) DescribeInstances(ctx context.Context, params *ec2.DescribeInstancesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeInstancesOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeInstances", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeInstancesOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeInstances indicates an expected call of DescribeInstances.
 func (mr *MockEC2APIMockRecorder) DescribeInstances(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeInstances", reflect.TypeOf((*MockEC2API)(nil).DescribeInstances), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeSnapshots mocks base method.
 func (m *MockEC2API) DescribeSnapshots(ctx context.Context, params *ec2.DescribeSnapshotsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeSnapshotsOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeSnapshots", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeSnapshotsOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeSnapshots indicates an expected call of DescribeSnapshots.
 func (mr *MockEC2APIMockRecorder) DescribeSnapshots(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeSnapshots", reflect.TypeOf((*MockEC2API)(nil).DescribeSnapshots), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeTags mocks base method.
 func (m *MockEC2API) DescribeTags(ctx context.Context, params *ec2.DescribeTagsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeTagsOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeTags", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeTagsOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeTags indicates an expected call of DescribeTags.
 func (mr *MockEC2APIMockRecorder) DescribeTags(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeTags", reflect.TypeOf((*MockEC2API)(nil).DescribeTags), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeVolumeStatus mocks base method.
 func (m *MockEC2API) DescribeVolumeStatus(ctx context.Context, params *ec2.DescribeVolumeStatusInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumeStatusOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeVolumeStatus", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeVolumeStatusOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeVolumeStatus indicates an expected call of DescribeVolumeStatus.
 func (mr *MockEC2APIMockRecorder) DescribeVolumeStatus(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeVolumeStatus", reflect.TypeOf((*MockEC2API)(nil).DescribeVolumeStatus), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeVolumes mocks base method.
 func (m *MockEC2API) DescribeVolumes(ctx context.Context, params *ec2.DescribeVolumesInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeVolumes", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeVolumesOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeVolumes indicates an expected call of DescribeVolumes.
 func (mr *MockEC2APIMockRecorder) DescribeVolumes(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeVolumes", reflect.TypeOf((*MockEC2API)(nil).DescribeVolumes), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DescribeVolumesModifications mocks base method.
 func (m *MockEC2API) DescribeVolumesModifications(ctx context.Context, params *ec2.DescribeVolumesModificationsInput, optFns ...func(*ec2.Options)) (*ec2.DescribeVolumesModificationsOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DescribeVolumesModifications", varargs...)
-	ret0, _ := ret[0].(*ec2.DescribeVolumesModificationsOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DescribeVolumesModifications indicates an expected call of DescribeVolumesModifications.
 func (mr *MockEC2APIMockRecorder) DescribeVolumesModifications(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DescribeVolumesModifications", reflect.TypeOf((*MockEC2API)(nil).DescribeVolumesModifications), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DetachVolume mocks base method.
 func (m *MockEC2API) DetachVolume(ctx context.Context, params *ec2.DetachVolumeInput, optFns ...func(*ec2.Options)) (*ec2.DetachVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DetachVolume", varargs...)
-	ret0, _ := ret[0].(*ec2.DetachVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DetachVolume indicates an expected call of DetachVolume.
 func (mr *MockEC2APIMockRecorder) DetachVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachVolume", reflect.TypeOf((*MockEC2API)(nil).DetachVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // EnableFastSnapshotRestores mocks base method.
 func (m *MockEC2API) EnableFastSnapshotRestores(ctx context.Context, params *ec2.EnableFastSnapshotRestoresInput, optFns ...func(*ec2.Options)) (*ec2.EnableFastSnapshotRestoresOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "EnableFastSnapshotRestores", varargs...)
-	ret0, _ := ret[0].(*ec2.EnableFastSnapshotRestoresOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // EnableFastSnapshotRestores indicates an expected call of EnableFastSnapshotRestores.
 func (mr *MockEC2APIMockRecorder) EnableFastSnapshotRestores(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnableFastSnapshotRestores", reflect.TypeOf((*MockEC2API)(nil).EnableFastSnapshotRestores), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // LockSnapshot mocks base method.
 func (m *MockEC2API) LockSnapshot(ctx context.Context, params *ec2.LockSnapshotInput, optFns ...func(*ec2.Options)) (*ec2.LockSnapshotOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "LockSnapshot", varargs...)
-	ret0, _ := ret[0].(*ec2.LockSnapshotOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // LockSnapshot indicates an expected call of LockSnapshot.
 func (mr *MockEC2APIMockRecorder) LockSnapshot(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LockSnapshot", reflect.TypeOf((*MockEC2API)(nil).LockSnapshot), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ModifyVolume mocks base method.
 func (m *MockEC2API) ModifyVolume(ctx context.Context, params *ec2.ModifyVolumeInput, optFns ...func(*ec2.Options)) (*ec2.ModifyVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ModifyVolume", varargs...)
-	ret0, _ := ret[0].(*ec2.ModifyVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ModifyVolume indicates an expected call of ModifyVolume.
 func (mr *MockEC2APIMockRecorder) ModifyVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ModifyVolume", reflect.TypeOf((*MockEC2API)(nil).ModifyVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }

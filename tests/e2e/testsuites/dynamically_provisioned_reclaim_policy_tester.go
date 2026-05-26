@@ -30,17 +30,11 @@ type DynamicallyProvisionedReclaimPolicyTest struct {
 }
 
 func (t *DynamicallyProvisionedReclaimPolicyTest) Run(client clientset.Interface, namespace *v1.Namespace) {
-	for _, volume := range t.Volumes {
-		tpvc, _ := volume.SetupDynamicPersistentVolumeClaim(client, namespace, t.CSIDriver)
-
-		// will delete the PVC
-		// will also wait for PV to be deleted separately when reclaimPolicy=Retian
-		tpvc.Cleanup()
-		// first check PV stills exists, then manually delete it
-		if tpvc.ReclaimPolicy() == v1.PersistentVolumeReclaimRetain {
-			tpvc.WaitForPersistentVolumePhase(v1.VolumeReleased)
-			tpvc.DeleteBoundPersistentVolume()
-			tpvc.DeleteBackingVolume(t.Cloud)
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// will delete the PVC
+// will also wait for PV to be deleted separately when reclaimPolicy=Retian
+
+// first check PV stills exists, then manually delete it

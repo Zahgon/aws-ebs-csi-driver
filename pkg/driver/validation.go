@@ -16,63 +16,11 @@ limitations under the License.
 
 package driver
 
-import (
-	"errors"
-	"fmt"
-	"strings"
-
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud"
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
-	"k8s.io/klog/v2"
-)
-
-func ValidateDriverOptions(options *Options) error {
-	if err := validateExtraTags(options.ExtraTags, false); err != nil {
-		return fmt.Errorf("invalid extra tags: %w", err)
-	}
-
-	if err := validateMode(options.Mode); err != nil {
-		return fmt.Errorf("invalid mode: %w", err)
-	}
-
-	if options.ModifyVolumeRequestHandlerTimeout == 0 && (options.Mode == ControllerMode || options.Mode == AllMode) {
-		return errors.New("invalid modifyVolumeRequestHandlerTimeout: timeout cannot be zero")
-	}
-
-	return nil
-}
+func ValidateDriverOptions(options *Options) error { _ = "STUB: not implemented"; return nil }
 
 func validateExtraTags(tags map[string]string, warnOnly bool) error {
-	validate := func(k, _ string) error {
-		if k == cloud.VolumeNameTagKey || k == cloud.SnapshotNameTagKey || k == ClusterNameTagKey {
-			return fmt.Errorf("tag key '%s' is reserved", k)
-		}
-		if strings.HasPrefix(k, cloud.KubernetesTagKeyPrefix) {
-			return fmt.Errorf("tag key prefix '%s' is reserved", cloud.KubernetesTagKeyPrefix)
-		}
-		if strings.HasPrefix(k, util.GetDriverName()+"/") {
-			return fmt.Errorf("tag key prefix '%s/' is reserved", util.GetDriverName())
-		}
-		return nil
-	}
-
-	for k, v := range tags {
-		err := validate(k, v)
-		if err != nil {
-			if warnOnly {
-				klog.InfoS("Skipping tag: the following key-value pair is not valid", "key", k, "value", v, "err", err)
-			} else {
-				return err
-			}
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func validateMode(mode Mode) error {
-	if mode != AllMode && mode != ControllerMode && mode != NodeMode {
-		return fmt.Errorf("mode is not supported (actual: %s, supported: %v)", mode, []Mode{AllMode, ControllerMode, NodeMode})
-	}
-
-	return nil
-}
+func validateMode(mode Mode) error { _ = "STUB: not implemented"; return nil }

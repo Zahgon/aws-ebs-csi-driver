@@ -16,16 +16,11 @@ package sanity
 
 import (
 	"context"
-	"fmt"
-	"math/rand"
-	"strconv"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/cloud/metadata"
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
 )
 
 type fakeCloud struct {
@@ -37,203 +32,108 @@ type fakeCloud struct {
 }
 
 func newFakeCloud(fmd *metadata.Metadata, mp string) *fakeCloud {
-	return &fakeCloud{
-		fakeMetadata:     fmd,
-		mountPath:        mp,
-		disks:            make(map[string]*cloud.Disk),
-		snapshots:        make(map[string]*cloud.Snapshot),
-		snapshotNameToID: make(map[string]string),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func (d *fakeCloud) CreateDisk(ctx context.Context, volumeID string, diskOptions *cloud.DiskOptions) (*cloud.Disk, error) {
-	for _, existingDisk := range d.disks {
-		if existingDisk.VolumeID == volumeID && existingDisk.CapacityGiB != util.BytesToGiB(diskOptions.CapacityBytes) {
-			return nil, cloud.ErrAlreadyExists
-		}
-	}
-
-	if diskOptions.SnapshotID != "" {
-		if _, exists := d.snapshots[diskOptions.SnapshotID]; !exists {
-			return nil, cloud.ErrSourceNotFound
-		}
-		newDisk := &cloud.Disk{
-			SnapshotID:       diskOptions.SnapshotID,
-			VolumeID:         volumeID,
-			AvailabilityZone: diskOptions.AvailabilityZone,
-			CapacityGiB:      util.BytesToGiB(diskOptions.CapacityBytes),
-		}
-		d.disks[volumeID] = newDisk
-		return newDisk, nil
-	}
-
-	newDisk := &cloud.Disk{
-		VolumeID:         volumeID,
-		AvailabilityZone: diskOptions.AvailabilityZone,
-		CapacityGiB:      util.BytesToGiB(diskOptions.CapacityBytes),
-	}
-	d.disks[volumeID] = newDisk
-	return newDisk, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
 func (d *fakeCloud) DeleteDisk(ctx context.Context, volumeID string) (bool, error) {
-	_, exists := d.disks[volumeID]
-	if !exists {
-		return false, cloud.ErrNotFound
-	}
-	delete(d.disks, volumeID)
-	return true, nil
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 func (d *fakeCloud) GetDiskByID(ctx context.Context, volumeID string) (*cloud.Disk, error) {
-	disk, exists := d.disks[volumeID]
-	if !exists {
-		return nil, cloud.ErrNotFound
-	}
-	return disk, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) CreateSnapshot(ctx context.Context, volumeID string, opts *cloud.SnapshotOptions) (*cloud.Snapshot, error) {
-	snapshotID := fmt.Sprintf("snap-%d", rand.New(rand.NewSource(time.Now().UnixNano())).Uint64())
-
-	_, exists := d.snapshots[snapshotID]
-	if exists {
-		return nil, cloud.ErrAlreadyExists
-	}
-	newSnapshot := &cloud.Snapshot{
-		SnapshotID:     snapshotID,
-		SourceVolumeID: volumeID,
-		CreationTime:   time.Now(),
-		ReadyToUse:     true,
-	}
-	d.snapshots[snapshotID] = newSnapshot
-	d.snapshotNameToID[opts.Tags["CSIVolumeSnapshotName"]] = snapshotID
-	return newSnapshot, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) DeleteSnapshot(ctx context.Context, snapshotID string) (bool, error) {
-	if _, exists := d.snapshots[snapshotID]; !exists {
-		return false, cloud.ErrNotFound
-	}
-	for name, id := range d.snapshotNameToID {
-		if id == snapshotID {
-			delete(d.snapshotNameToID, name)
-			break
-		}
-	}
-	delete(d.snapshots, snapshotID)
-	return true, nil
+	_ = "STUB: not implemented"
+	return false, nil
 }
+
 func (d *fakeCloud) GetSnapshotByID(ctx context.Context, snapshotID string) (*cloud.Snapshot, error) {
-	snapshot, exists := d.snapshots[snapshotID]
-	if !exists {
-		return nil, cloud.ErrNotFound
-	}
-	return snapshot, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) GetSnapshotByName(ctx context.Context, name string) (*cloud.Snapshot, error) {
-	if snapshotID, exists := d.snapshotNameToID[name]; exists {
-		return d.snapshots[snapshotID], nil
-	}
-	return nil, cloud.ErrNotFound
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) GetInstancesPatching(ctx context.Context, nodeIDs []string) ([]*types.Instance, error) {
-	return []*types.Instance{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) ListSnapshots(ctx context.Context, sourceVolumeID string, maxResults int32, nextToken string) (*cloud.ListSnapshotsResponse, error) {
-	var s []*cloud.Snapshot
-	startIndex := 0
-	var err error
-
-	if nextToken != "" {
-		startIndex, err = strconv.Atoi(nextToken)
-		if err != nil {
-			return nil, fmt.Errorf("invalid next token %s", nextToken)
-		}
-	}
-	var nextTokenStr string
-	count := 0
-	for _, snap := range d.snapshots {
-		if snap.SourceVolumeID == sourceVolumeID || sourceVolumeID == "" {
-			if startIndex <= count {
-				s = append(s, snap)
-				if maxResults > 0 && int32(len(s)) >= maxResults {
-					nextTokenStr = strconv.Itoa(startIndex + int(maxResults))
-					break
-				}
-			}
-			count++
-		}
-	}
-
-	return &cloud.ListSnapshotsResponse{
-		Snapshots: s,
-		NextToken: nextTokenStr,
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) AttachDisk(ctx context.Context, volumeID string, instanceID string) (string, error) {
-	_, diskExists := d.disks[volumeID]
-	if !diskExists || instanceID != d.fakeMetadata.InstanceID {
-		return "", cloud.ErrNotFound
-	}
-	return d.mountPath, nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 func (d *fakeCloud) DetachDisk(ctx context.Context, volumeID string, instanceID string) error {
-	_, diskExists := d.disks[volumeID]
-	if !diskExists || instanceID != d.fakeMetadata.InstanceID {
-		return cloud.ErrNotFound
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (d *fakeCloud) ResizeOrModifyDisk(ctx context.Context, volumeID string, newSizeBytes int64, modifyOptions *cloud.ModifyDiskOptions) (int32, error) {
-	disk, exists := d.disks[volumeID]
-	if !exists {
-		return 0, cloud.ErrNotFound
-	}
-	newSizeGiB := util.BytesToGiB(newSizeBytes)
-	disk.CapacityGiB = newSizeGiB
-	d.disks[volumeID] = disk
-	realSizeGiB := newSizeGiB
-	return realSizeGiB, nil
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
 func (d *fakeCloud) AvailabilityZones(ctx context.Context) (map[string]struct{}, error) {
-	return map[string]struct{}{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) EnableFastSnapshotRestores(ctx context.Context, availabilityZones []string, snapshotID string) (*ec2.EnableFastSnapshotRestoresOutput, error) {
-	return &ec2.EnableFastSnapshotRestoresOutput{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) LockSnapshot(ctx context.Context, lockOptions *cloud.SnapshotLockOptions) error {
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (d *fakeCloud) GetDiskByName(ctx context.Context, name string, capacityBytes int64) (*cloud.Disk, error) {
-	return &cloud.Disk{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) ModifyTags(ctx context.Context, volumeID string, tagOptions cloud.ModifyTagsOptions) error {
+	_ = "STUB: not implemented"
 	return nil
 }
 
 func (d *fakeCloud) WaitForAttachmentState(ctx context.Context, expectedState types.VolumeAttachmentState, volumeID string, expectedInstance string, expectedDevice string, alreadyAssigned bool, expectedCardIndex *int32) (*types.VolumeAttachment, error) {
-	return &types.VolumeAttachment{}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func (d *fakeCloud) IsVolumeInitialized(ctx context.Context, volumeID string) (bool, error) {
-	return true, nil
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
-func (d *fakeCloud) DryRun(ctx context.Context) error {
-	return nil
-}
+func (d *fakeCloud) DryRun(ctx context.Context) error { _ = "STUB: not implemented"; return nil }
 
 func (d *fakeCloud) GetVolumeIDByNodeAndDevice(ctx context.Context, nodeID, deviceName string) (string, error) {
-	return "", cloud.ErrNotFound
+	_ = "STUB: not implemented"
+	return "", nil
 }

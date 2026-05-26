@@ -6,7 +6,6 @@ package cloud
 
 import (
 	context "context"
-	reflect "reflect"
 
 	sagemaker "github.com/aws/aws-sdk-go-v2/service/sagemaker"
 	gomock "github.com/golang/mock/gomock"
@@ -25,52 +24,37 @@ type MockSageMakerAPIMockRecorder struct {
 
 // NewMockSageMakerAPI creates a new mock instance.
 func NewMockSageMakerAPI(ctrl *gomock.Controller) *MockSageMakerAPI {
-	mock := &MockSageMakerAPI{ctrl: ctrl}
-	mock.recorder = &MockSageMakerAPIMockRecorder{mock}
-	return mock
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockSageMakerAPI) EXPECT() *MockSageMakerAPIMockRecorder {
-	return m.recorder
+	_ = "STUB: not implemented"
+
+	// AttachClusterNodeVolume mocks base method.
+	return nil
 }
 
-// AttachClusterNodeVolume mocks base method.
 func (m *MockSageMakerAPI) AttachClusterNodeVolume(ctx context.Context, params *sagemaker.AttachClusterNodeVolumeInput, optFns ...func(*sagemaker.Options)) (*sagemaker.AttachClusterNodeVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "AttachClusterNodeVolume", varargs...)
-	ret0, _ := ret[0].(*sagemaker.AttachClusterNodeVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // AttachClusterNodeVolume indicates an expected call of AttachClusterNodeVolume.
 func (mr *MockSageMakerAPIMockRecorder) AttachClusterNodeVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachClusterNodeVolume", reflect.TypeOf((*MockSageMakerAPI)(nil).AttachClusterNodeVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DetachClusterNodeVolume mocks base method.
 func (m *MockSageMakerAPI) DetachClusterNodeVolume(ctx context.Context, params *sagemaker.DetachClusterNodeVolumeInput, optFns ...func(*sagemaker.Options)) (*sagemaker.DetachClusterNodeVolumeOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "DetachClusterNodeVolume", varargs...)
-	ret0, _ := ret[0].(*sagemaker.DetachClusterNodeVolumeOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // DetachClusterNodeVolume indicates an expected call of DetachClusterNodeVolume.
 func (mr *MockSageMakerAPIMockRecorder) DetachClusterNodeVolume(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachClusterNodeVolume", reflect.TypeOf((*MockSageMakerAPI)(nil).DetachClusterNodeVolume), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }

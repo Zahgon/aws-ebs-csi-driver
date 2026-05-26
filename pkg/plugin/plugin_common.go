@@ -30,7 +30,6 @@ import (
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/spf13/pflag"
-	"k8s.io/klog/v2"
 )
 
 // Plugin stores the currently loaded plugin.
@@ -38,18 +37,18 @@ var plugin EbsCsiPlugin = nil
 
 // GetPlugin returns the currently loaded plugin. It will return nil if no plugin is loaded.
 func GetPlugin() EbsCsiPlugin {
-	return plugin
+	_ = "STUB: not implemented"
+
+	// loadPlugin loads a plugin into memory.
+	return *new(EbsCsiPlugin)
 }
 
-// loadPlugin loads a plugin into memory.
 func loadPlugin(pluginToLoad EbsCsiPlugin) {
-	if plugin != nil {
-		// Multiple plugins are not currently supported
-		// Thus, exit as quickly as possible
-		klog.ErrorS(nil, "Attempted to load plugin on top of existing plugin")
-		klog.FlushAndExit(klog.ExitFlushTimeout, 0)
-	}
-	plugin = pluginToLoad
+	_ = "STUB: not implemented"
+
+	// Multiple plugins are not currently supported
+	// Thus, exit as quickly as possible
+	return
 }
 
 // EbsCsiPlugin is the common plugin interface all plugins implement.
@@ -89,25 +88,29 @@ type EbsCsiPlugin interface {
 type ebsCsiPluginBase struct{}
 
 func (p *ebsCsiPluginBase) InitFlags(_ *pflag.FlagSet) {
+	_ = "STUB: not implemented"
 	// Do nothing intentionally.
+	return
 }
 
 func (p *ebsCsiPluginBase) GetEC2Client(_ aws.Config, _ ...func(o *ec2.Options)) util.EC2API {
-	return nil
+	_ = "STUB: not implemented"
+	return *new(util.EC2API)
 }
 
 func (p *ebsCsiPluginBase) GetSageMakerClient(_ aws.Config, _ ...func(o *sagemaker.Options)) util.SageMakerAPI {
+	_ = "STUB: not implemented"
+	return *new(util.SageMakerAPI)
+}
+
+func (p *ebsCsiPluginBase) GetDriverName() string { _ = "STUB: not implemented"; return "" }
+
+func (p *ebsCsiPluginBase) GetDiskTopologySegments() map[string]string {
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func (p *ebsCsiPluginBase) GetDriverName() string {
-	return ""
-}
-
-func (p *ebsCsiPluginBase) GetDiskTopologySegments() map[string]string {
-	return map[string]string{}
-}
-
 func (p *ebsCsiPluginBase) GetNodeTopologySegments() map[string]string {
-	return map[string]string{}
+	_ = "STUB: not implemented"
+	return nil
 }

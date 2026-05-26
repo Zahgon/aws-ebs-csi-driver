@@ -22,8 +22,6 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
 )
 
@@ -78,75 +76,13 @@ var ebsCardCounts = map[string]int{
 `
 
 func getAvailableRegions(ctx context.Context) ([]string, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	ec2Client := ec2.NewFromConfig(cfg)
-	result, err := ec2Client.DescribeRegions(ctx, &ec2.DescribeRegionsInput{})
-	if err != nil {
-		return nil, err
-	}
-
-	regions := make([]string, 0, len(result.Regions))
-	for _, region := range result.Regions {
-		regions = append(regions, *region.RegionName)
-	}
-
-	return regions, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func getInstanceTypesForRegion(ctx context.Context, region string) (map[string]instanceData, error) {
-	cfg, err := config.LoadDefaultConfig(ctx, config.WithRegion(region))
-	if err != nil {
-		return nil, err
-	}
-	ec2Client := ec2.NewFromConfig(cfg)
-
-	instances := make(map[string]instanceData)
-	paginator := ec2.NewDescribeInstanceTypesPaginator(ec2Client, &ec2.DescribeInstanceTypesInput{})
-
-	for paginator.HasMorePages() {
-		page, err := paginator.NextPage(ctx)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, instanceType := range page.InstanceTypes {
-			switch {
-			case string(instanceType.InstanceType) == "":
-				log.Fatalf("InstanceType should never be empty")
-			case instanceType.EbsInfo == nil:
-				log.Fatalf("EbsInfo should never be nil for instance type %s", instanceType.InstanceType)
-			case instanceType.EbsInfo.MaximumEbsAttachments == nil:
-				log.Fatalf("MaximumEbsAttachments should never be nil for instance type %s", instanceType.InstanceType)
-			case instanceType.EbsInfo.AttachmentLimitType != util.AttachmentDedicated && instanceType.EbsInfo.AttachmentLimitType != util.AttachmentShared:
-				log.Fatalf("AttachmentLimitType is invalid value %s for instance type %s", instanceType.InstanceType, instanceType.EbsInfo.AttachmentLimitType)
-			case instanceType.EbsInfo.MaximumEbsCards != nil && *instanceType.EbsInfo.MaximumEbsCards < 1:
-				log.Fatalf("MaximumEbsCards is less than 1 for instance type %s: %d", instanceType.InstanceType, *instanceType.EbsInfo.MaximumEbsCards)
-			}
-
-			if override, ok := wrongLimitInstances[string(instanceType.InstanceType)]; ok {
-				if override.maxAttachments != nil {
-					instanceType.EbsInfo.MaximumEbsAttachments = override.maxAttachments
-				}
-				if override.maxEbsCards != nil {
-					instanceType.EbsInfo.MaximumEbsCards = override.maxEbsCards
-				}
-			}
-
-			key := string(instanceType.InstanceType)
-			instances[key] = instanceData{
-				MaxAttachments: *instanceType.EbsInfo.MaximumEbsAttachments,
-				AttachmentType: string(instanceType.EbsInfo.AttachmentLimitType),
-				Hypervisor:     string(instanceType.Hypervisor),
-				MaxEbsCards:    instanceType.EbsInfo.MaximumEbsCards,
-			}
-		}
-	}
-
-	return instances, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func main() {

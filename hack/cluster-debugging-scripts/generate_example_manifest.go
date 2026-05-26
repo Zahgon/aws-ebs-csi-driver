@@ -16,10 +16,8 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
-	"strings"
 	"text/template"
 )
 
@@ -62,15 +60,6 @@ func main() {
 }
 
 func parseNodeAffinityFlag(nodeAffinityPtr *string) (string, string, error) {
-	nodeAffinityKey := ""
-	nodeAffinityValue := ""
-	if len(*nodeAffinityPtr) > 0 {
-		nodeAffinity := strings.Split(*nodeAffinityPtr, ":")
-		if len(nodeAffinity) != 2 {
-			return "", "", fmt.Errorf("flag '--node-affinity' must take the form 'key:value'")
-		}
-		nodeAffinityKey = nodeAffinity[0]
-		nodeAffinityValue = nodeAffinity[1]
-	}
-	return nodeAffinityKey, nodeAffinityValue, nil
+	_ = "STUB: not implemented"
+	return "", "", nil
 }

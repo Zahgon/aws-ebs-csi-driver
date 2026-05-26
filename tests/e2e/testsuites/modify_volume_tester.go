@@ -15,18 +15,10 @@ limitations under the License.
 package testsuites
 
 import (
-	"context"
-	"fmt"
-
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/tests/e2e/driver"
 	. "github.com/onsi/ginkgo/v2"
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/api/storage/v1beta1"
-	"k8s.io/apimachinery/pkg/api/resource"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	clientset "k8s.io/client-go/kubernetes"
-	"k8s.io/kubernetes/test/e2e/framework"
 )
 
 // ModifyVolumeTest will provision pod with attached volume, and test that modifying its pvc will modify the associated pv.
@@ -53,84 +45,11 @@ const (
 )
 
 func (modifyVolumeTest *ModifyVolumeTest) Run(c clientset.Interface, ns *v1.Namespace, ebsDriver driver.PVTestDriver, testType ModifyTestType) {
-	By("setting up pvc")
-	volumeDetails := CreateVolumeDetails(modifyVolumeTest.CreateVolumeParameters, volumeSize)
-	testVolume, _ := volumeDetails.SetupDynamicPersistentVolumeClaim(c, ns, ebsDriver)
-	defer testVolume.Cleanup()
-
-	parametersWithPrefix := PrefixAnnotations(util.GetDriverName()+"/", modifyVolumeTest.ModifyVolumeParameters)
-
-	By("deploying pod continuously writing to volume")
-	formatOptionMountPod := createPodWithVolume(c, ns, PodCmdContinuousWrite(DefaultMountPath), testVolume, volumeDetails)
-	defer formatOptionMountPod.Cleanup()
-	formatOptionMountPod.WaitForRunning()
-
-	if modifyVolumeTest.ShouldTestInvalidModificationRecovery {
-		By("modifying the pvc with invalid annotations")
-		attemptInvalidModification(c, ns, testVolume)
-	}
-
-	By("modifying the pvc")
-	modifyingPvc, _ := c.CoreV1().PersistentVolumeClaims(ns.Name).Get(context.TODO(), testVolume.persistentVolumeClaim.Name, metav1.GetOptions{})
-	if testType == VolumeModifierForK8s {
-		AnnotatePvc(modifyingPvc, parametersWithPrefix)
-	} else if testType == ExternalResizer {
-		vac, err := c.StorageV1beta1().VolumeAttributesClasses().Create(context.Background(), &v1beta1.VolumeAttributesClass{
-			ObjectMeta: metav1.ObjectMeta{
-				Name:      formatOptionMountPod.pod.Name,
-				Namespace: ns.Name,
-			},
-			DriverName: util.GetDriverName(),
-			Parameters: modifyVolumeTest.ModifyVolumeParameters,
-		}, metav1.CreateOptions{})
-		framework.ExpectNoError(err)
-
-		vacName := vac.Name
-		modifyingPvc.Spec.VolumeAttributesClassName = &vacName
-	}
-
-	var updatedPvcSize resource.Quantity
-	if modifyVolumeTest.ShouldResizeVolume {
-		By("resizing the pvc")
-		updatedPvcSize = IncreasePvcObjectStorage(modifyingPvc, DefaultSizeIncreaseGi)
-	}
-
-	modifiedPvc, err := c.CoreV1().PersistentVolumeClaims(ns.Name).Update(context.TODO(), modifyingPvc, metav1.UpdateOptions{})
-	if err != nil {
-		framework.ExpectNoError(err, fmt.Sprintf("fail to modify pvc(%s): %v", modifyingPvc.Name, err))
-	}
-	framework.Logf("updated pvc: %s\n", modifiedPvc.Annotations)
-
-	By("wait for and confirm pv modification")
-	if testType == VolumeModifierForK8s {
-		err = WaitForPvToModify(c, ns, testVolume.persistentVolume.Name, parametersWithPrefix, DefaultModificationTimeout, DefaultK8sAPIPollingInterval)
-	} else if testType == ExternalResizer {
-		err = WaitForVacToApplyToPv(c, ns, testVolume.persistentVolume.Name, *modifyingPvc.Spec.VolumeAttributesClassName, DefaultModificationTimeout, DefaultK8sAPIPollingInterval)
-	}
-	framework.ExpectNoError(err, fmt.Sprintf("fail to modify pv(%s): %v", modifyingPvc.Name, err))
-	if modifyVolumeTest.ShouldResizeVolume {
-		err = WaitForPvToResize(c, ns, testVolume.persistentVolume.Name, updatedPvcSize, DefaultResizeTimout, DefaultK8sAPIPollingInterval)
-		framework.ExpectNoError(err, fmt.Sprintf("fail to resize pv(%s): %v", modifyingPvc.Name, err))
-	}
-
-	By("verifying volume properties")
-	volumeID := testVolume.persistentVolume.Spec.CSI.VolumeHandle
-
-	expected := BuildExpectedParameters(modifyVolumeTest.ModifyVolumeParameters, "")
-	if modifyVolumeTest.ShouldResizeVolume {
-		sizeGiB := util.BytesToGiB(updatedPvcSize.Value())
-		expected.Size = &sizeGiB
-	}
-
-	VerifyVolumeProperties(volumeID, expected)
+	_ = "STUB: not implemented"
+	return
 }
 
 func attemptInvalidModification(c clientset.Interface, ns *v1.Namespace, testVolume *TestPersistentVolumeClaim) {
-	modifyingPvc, _ := c.CoreV1().PersistentVolumeClaims(ns.Name).Get(context.TODO(), testVolume.persistentVolumeClaim.Name, metav1.GetOptions{})
-	AnnotatePvc(modifyingPvc, invalidAnnotations)
-	modifiedPvc, err := c.CoreV1().PersistentVolumeClaims(ns.Name).Update(context.TODO(), modifyingPvc, metav1.UpdateOptions{})
-	if err != nil {
-		framework.ExpectNoError(err, fmt.Sprintf("fail to modify pvc(%s): %v", modifyingPvc.Name, err))
-	}
-	framework.Logf("pvc %q/%q has been modified with invalid annotations: %s", ns.Name, modifiedPvc.Name, modifiedPvc.Annotations)
+	_ = "STUB: not implemented"
+	return
 }

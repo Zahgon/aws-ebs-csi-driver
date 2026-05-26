@@ -15,86 +15,49 @@
 package testutil
 
 import (
-	"context"
 	"reflect"
 
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
 	"github.com/golang/mock/gomock"
 )
 
 type contextMatcher struct{}
 
-func (m contextMatcher) Matches(x any) bool {
-	_, ok := x.(context.Context)
-	return ok
-}
+func (m contextMatcher) Matches(x any) bool { _ = "STUB: not implemented"; return false }
 
-func (m contextMatcher) String() string {
-	return "is context"
-}
+func (m contextMatcher) String() string { _ = "STUB: not implemented"; return "" }
 
-func AnyContext() gomock.Matcher {
-	return contextMatcher{}
-}
+func AnyContext() gomock.Matcher { _ = "STUB: not implemented"; return *new(gomock.Matcher) }
 
 type typeMatcher struct {
 	t reflect.Type
 }
 
-func (m typeMatcher) Matches(x any) bool {
-	if x == nil {
-		return false
-	}
-	return reflect.TypeOf(x) == m.t
-}
+func (m typeMatcher) Matches(x any) bool { _ = "STUB: not implemented"; return false }
 
-func (m typeMatcher) String() string {
-	return "is type " + m.t.String()
-}
+func (m typeMatcher) String() string { _ = "STUB: not implemented"; return "" }
 
-func OfType(example any) gomock.Matcher {
-	return typeMatcher{t: reflect.TypeOf(example)}
-}
+func OfType(example any) gomock.Matcher { _ = "STUB: not implemented"; return *new(gomock.Matcher) }
 
 type ec2OptionsMatcher struct{}
 
 func (m ec2OptionsMatcher) Matches(x any) bool {
+	_ = "STUB: not implemented"
 	// Check if it's a single function
-	if fn, ok := x.(func(*ec2.Options)); ok {
-		return fn != nil
-	}
-	// Check if it's a slice of functions
-	v := reflect.ValueOf(x)
-	if v.Kind() != reflect.Slice {
-		return false
-	}
-	sliceType := reflect.TypeOf(x)
-	return sliceType.Elem() == reflect.TypeFor[func(*ec2.Options)]()
+	return false
 }
 
-func (m ec2OptionsMatcher) String() string {
-	return "is EC2 options function or slice"
-}
+// Check if it's a slice of functions
 
-func EC2Options() gomock.Matcher {
-	return ec2OptionsMatcher{}
-}
+func (m ec2OptionsMatcher) String() string { _ = "STUB: not implemented"; return "" }
+
+func EC2Options() gomock.Matcher { _ = "STUB: not implemented"; return *new(gomock.Matcher) }
 
 type ec2InputMatcher struct {
 	expectedType reflect.Type
 }
 
-func (m ec2InputMatcher) Matches(x any) bool {
-	if x == nil {
-		return false
-	}
-	return reflect.TypeOf(x) == m.expectedType
-}
+func (m ec2InputMatcher) Matches(x any) bool { _ = "STUB: not implemented"; return false }
 
-func (m ec2InputMatcher) String() string {
-	return "is " + m.expectedType.String()
-}
+func (m ec2InputMatcher) String() string { _ = "STUB: not implemented"; return "" }
 
-func EC2Input(example any) gomock.Matcher {
-	return ec2InputMatcher{expectedType: reflect.TypeOf(example)}
-}
+func EC2Input(example any) gomock.Matcher { _ = "STUB: not implemented"; return *new(gomock.Matcher) }

@@ -27,9 +27,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	v1 "k8s.io/api/core/v1"
 	storagev1 "k8s.io/api/storage/v1"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/runtime/serializer"
 	clientset "k8s.io/client-go/kubernetes"
 	restclientset "k8s.io/client-go/rest"
 	"k8s.io/kubernetes/test/e2e/framework"
@@ -831,14 +828,7 @@ var _ = Describe("[ebs-csi-e2e] [multi-az] Dynamic Provisioning", func() {
 })
 
 func restClient(group string, version string) (restclientset.Interface, error) {
+	_ = "STUB: not implemented"
 	// setup rest client
-	config, err := framework.LoadConfig()
-	if err != nil {
-		Fail(fmt.Sprintf("could not load config: %v", err))
-	}
-	gv := schema.GroupVersion{Group: group, Version: version}
-	config.GroupVersion = &gv
-	config.APIPath = "/apis"
-	config.NegotiatedSerializer = serializer.WithoutConversionCodecFactory{CodecFactory: serializer.NewCodecFactory(runtime.NewScheme())}
-	return restclientset.RESTClientFor(config)
+	return *new(restclientset.Interface), nil
 }

@@ -18,21 +18,10 @@ package util
 
 import (
 	"context"
-	"fmt"
-	"math"
-	"net/url"
-	"os"
-	"path/filepath"
-	"reflect"
 	"regexp"
-	"runtime"
-	"strings"
-	"sync"
-	"testing"
 	"time"
 
 	csi "github.com/container-storage-interface/spec/lib/go/csi"
-	"k8s.io/klog/v2"
 )
 
 const (
@@ -58,172 +47,71 @@ var (
 	driverName = ""
 )
 
-func SetDriverName(name string) {
-	setName := sync.OnceValue(func() string {
-		driverName = name
-		return driverName
-	})()
-	if setName != name {
-		klog.ErrorS(nil, "Attempted to change driver name after it was already set")
-		klog.FlushAndExit(klog.ExitFlushTimeout, 0)
-	}
-}
+func SetDriverName(name string) { _ = "STUB: not implemented"; return }
 
-func GetDriverName() string {
-	if driverName == "" {
-		// Return a hardcoded value in unit tests, as main.go won't be called to setup the name
-		if testing.Testing() {
-			return "test.ebs.csi.aws.com"
-		}
-		// SetDriverName hasn't been initialized in main.go yet - this will result in a very
-		// difficult to debug bug, so immediately exit if code is added that calls this too early
-		klog.ErrorS(nil, "Attempted to load driver name too early")
-		klog.FlushAndExit(klog.ExitFlushTimeout, 0)
-	}
-	return driverName
-}
+func GetDriverName() string { _ = "STUB: not implemented"; return "" }
+
+// Return a hardcoded value in unit tests, as main.go won't be called to setup the name
+
+// SetDriverName hasn't been initialized in main.go yet - this will result in a very
+// difficult to debug bug, so immediately exit if code is added that calls this too early
 
 // RoundUpBytes rounds up the volume size in bytes up to multiplications of GiB.
-func RoundUpBytes(volumeSizeBytes int64) int64 {
-	return roundUpSize(volumeSizeBytes, GiB) * GiB
-}
+func RoundUpBytes(volumeSizeBytes int64) int64 { _ = "STUB: not implemented"; return 0 }
 
 // RoundUpGiB rounds up the volume size in bytes upto multiplications of GiB
 // in the unit of GiB.
-func RoundUpGiB(volumeSizeBytes int64) (int32, error) {
-	result := roundUpSize(volumeSizeBytes, GiB)
-	if result > int64(math.MaxInt32) {
-		return 0, fmt.Errorf("rounded up size exceeds maximum value of int32: %d", result)
-	}
-	//nolint:gosec // Integer overflow handled
-	return int32(result), nil
-}
+func RoundUpGiB(volumeSizeBytes int64) (int32, error) { _ = "STUB: not implemented"; return 0, nil }
+
+//nolint:gosec // Integer overflow handled
 
 // BytesToGiB converts Bytes to GiB.
-func BytesToGiB(volumeSizeBytes int64) int32 {
-	result := volumeSizeBytes / GiB
-	if result > int64(math.MaxInt32) {
-		// Handle overflow
-		return math.MaxInt32
-	}
-	//nolint:gosec // Integer overflow handled
-	return int32(result)
-}
+func BytesToGiB(volumeSizeBytes int64) int32 { _ = "STUB: not implemented"; return 0 }
+
+// Handle overflow
+
+//nolint:gosec // Integer overflow handled
 
 // GiBToBytes converts GiB to Bytes.
-func GiBToBytes(volumeSizeGiB int32) int64 {
-	return int64(volumeSizeGiB) * GiB
-}
+func GiBToBytes(volumeSizeGiB int32) int64 { _ = "STUB: not implemented"; return 0 }
 
 func ParseEndpoint(endpoint string, hostprocess bool) (string, string, error) {
-	if runtime.GOOS == "windows" && hostprocess {
-		parts := strings.SplitN(endpoint, "://", 2)
-		if len(parts) != 2 {
-			return "", "", fmt.Errorf("invalid endpoint format: %s", endpoint)
-		}
-		scheme := strings.ToLower(parts[0])
-		addr := parts[1]
-
-		// Remove the socket file if it already exists
-		if scheme == "unix" {
-			if _, err := os.Stat(addr); err == nil {
-				if err := os.Remove(addr); err != nil {
-					return "", "", fmt.Errorf("failed to remove existing socket file: %w", err)
-				}
-			}
-		}
-		return scheme, addr, nil
-	}
-
-	u, err := url.Parse(endpoint)
-	if err != nil {
-		return "", "", fmt.Errorf("could not parse endpoint: %w", err)
-	}
-
-	addr := filepath.Join(u.Host, filepath.FromSlash(u.Path))
-
-	scheme := strings.ToLower(u.Scheme)
-	switch scheme {
-	case "tcp":
-	case "unix":
-		addr = filepath.Join("/", addr)
-		if err := os.Remove(addr); err != nil && !os.IsNotExist(err) { // #nosec G703 -- addr is derived from a parsed URL path, not direct user input
-			return "", "", fmt.Errorf("could not remove unix domain socket %q: %w", addr, err)
-		}
-	default:
-		return "", "", fmt.Errorf("unsupported protocol: %s", scheme)
-	}
-
-	return scheme, addr, nil
+	_ = "STUB: not implemented"
+	return "", "", nil
 }
+
+// Remove the socket file if it already exists
+
+// #nosec G703 -- addr is derived from a parsed URL path, not direct user input
 
 func roundUpSize(volumeSizeBytes int64, allocationUnitBytes int64) int64 {
-	if allocationUnitBytes == 0 {
-		return 0 // Avoid division by zero
-	}
-	return (volumeSizeBytes + allocationUnitBytes - 1) / allocationUnitBytes
+	_ = "STUB: not implemented"
+	return 0
 }
+
+// Avoid division by zero
 
 // GetAccessModes returns a slice containing all of the access modes defined
 // in the passed in VolumeCapabilities.
-func GetAccessModes(caps []*csi.VolumeCapability) *[]string {
-	modes := []string{}
-	for _, c := range caps {
-		modes = append(modes, c.GetAccessMode().GetMode().String())
-	}
-	return &modes
-}
+func GetAccessModes(caps []*csi.VolumeCapability) *[]string { _ = "STUB: not implemented"; return nil }
 
 // StringIsAlphanumeric returns true if a given string contains only English letters or numbers.
-func StringIsAlphanumeric(s string) bool {
-	return isAlphanumericRegex(s)
-}
+func StringIsAlphanumeric(s string) bool { _ = "STUB: not implemented"; return false }
 
 // CountMACAddresses returns the amount of MAC addresses within a string.
-func CountMACAddresses(s string) int {
-	matches := isMACAddressRegex.FindAllStringIndex(s, -1)
-	return len(matches)
-}
+func CountMACAddresses(s string) int { _ = "STUB: not implemented"; return 0 }
 
 // NormalizeWindowsPath normalizes a Windows path.
-func NormalizeWindowsPath(path string) string {
-	normalizedPath := strings.ReplaceAll(path, "/", "\\")
-	if strings.HasPrefix(normalizedPath, "\\") {
-		normalizedPath = "c:" + normalizedPath
-	}
-	return normalizedPath
-}
+func NormalizeWindowsPath(path string) string { _ = "STUB: not implemented"; return "" }
 
 // SanitizeRequest takes a request object and returns a copy of the request with
 // the "Secrets" field cleared.
-func SanitizeRequest(req any) any {
-	v := reflect.ValueOf(&req).Elem()
-	e := reflect.New(v.Elem().Type()).Elem()
-
-	e.Set(v.Elem())
-
-	f := reflect.Indirect(e).FieldByName("Secrets")
-
-	if f.IsValid() && f.CanSet() && f.Kind() == reflect.Map {
-		f.Set(reflect.MakeMap(f.Type()))
-		v.Set(e)
-	}
-	return req
-}
+func SanitizeRequest(req any) any { _ = "STUB: not implemented"; return *new(any) }
 
 // WaitUntilTimeOrContext returns once time wakeup has elapsed or ctx is done.
 func WaitUntilTimeOrContext(ctx context.Context, wakeup time.Time) {
-	now := time.Now()
-	if wakeup.Before(now) {
-		return
-	}
-
-	select {
-	case <-ctx.Done():
-	case <-time.After(time.Until(wakeup)):
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
-func IsHyperPodNode(nodeID string) bool {
-	return strings.HasPrefix(nodeID, "hyperpod-")
-}
+func IsHyperPodNode(nodeID string) bool { _ = "STUB: not implemented"; return false }

@@ -215,8 +215,8 @@ type fileSystemConfig struct {
 }
 
 func (fsConfig fileSystemConfig) isParameterSupported(paramName string) bool {
-	_, notSupported := fsConfig.NotSupportedParams[paramName]
-	return !notSupported
+	_ = "STUB: not implemented"
+	return false
 }
 
 var (

@@ -18,24 +18,14 @@ package e2e
 
 import (
 	"context"
-	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
-	"time"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	corev1 "k8s.io/api/core/v1"
 	storagev1 "k8s.io/api/storage/v1"
 	v1 "k8s.io/api/storage/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	clientset "k8s.io/client-go/kubernetes"
@@ -170,431 +160,83 @@ var _ = framework.Describe("[ebs-csi-e2e] [Disruptive] Metadata Labeler Sidecar"
 })
 
 // getAllocatableCount returns the limit of volumes that the node supports.
-func getAllocatableCount(volumes, enis int) int32 {
-	return int32(27 - volumes - enis)
-}
+func getAllocatableCount(volumes, enis int) int32 { _ = "STUB: not implemented"; return 0 }
 
 // getVolENIs gets the expected metadata of each instance from the ec2 API
 func getVolENIs(resp *ec2.DescribeInstancesOutput) map[string]*instanceMetadata {
-	expectedMetadata := map[string]*instanceMetadata{}
-	for _, reservation := range resp.Reservations {
-		for _, instance := range reservation.Instances {
-			instanceID := *instance.InstanceId
-
-			numAttachedENIs := 0
-			if instance.NetworkInterfaces != nil {
-				numAttachedENIs = len(instance.NetworkInterfaces)
-			}
-
-			numBlockDeviceMappings := 0
-			if instance.BlockDeviceMappings != nil {
-				// we do not include the root volume in the expected number of volumes attached
-				numBlockDeviceMappings = len(instance.BlockDeviceMappings) - 1
-			}
-			expectedMetadata[instanceID] = &instanceMetadata{
-				ENIs:             numAttachedENIs,
-				Volumes:          numBlockDeviceMappings,
-				InstanceType:     string(instance.InstanceType),
-				AvailabilityZone: *instance.Placement.AvailabilityZone,
-			}
-		}
-	}
-	return expectedMetadata
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// we do not include the root volume in the expected number of volumes attached
 
 // checkVolENI compares `expectedMetadata` and `labeledMetadata` to have the same number of volumes and ENIs attached to each node in `nodes`
 func checkVolENI(expectedMetadata, labeledMetadata map[string]*instanceMetadata, nodes *corev1.NodeList) {
-	for _, node := range nodes.Items {
-		vol, _ := strconv.Atoi(node.GetLabels()[util.GetDriverName()+"/non-csi-ebs-volumes-count"])
-		enis, _ := strconv.Atoi(node.GetLabels()[util.GetDriverName()+"/enis-count"])
-		id := parseProviderID(node.Spec.ProviderID)
-		labeledMetadata[id] = &instanceMetadata{}
-		labeledMetadata[id].ENIs = enis
-		labeledMetadata[id].Volumes = vol
-		labeledMetadata[id].NodeID = node.Name
-
-		if expectedMetadata[id] != nil {
-			if labeledMetadata[id].Volumes != expectedMetadata[id].Volumes {
-				Fail(fmt.Sprintf("Volume count mismatch for node %s: expected %d, got %d\n",
-					node.Name, expectedMetadata[id].Volumes, labeledMetadata[id].Volumes))
-			}
-			if labeledMetadata[id].ENIs != expectedMetadata[id].ENIs {
-				Fail(fmt.Sprintf("ENI count mismatch for node %s: expected %d, got %d\n",
-					node.Name, expectedMetadata[id].ENIs, labeledMetadata[id].ENIs))
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 // checkAllocatable compares `expectedMetadata` and `labeledMetadata` to have the same allocatable count on each node in `nodes`
 func checkAllocatable(expectedMetadata, labeledMetadata map[string]*instanceMetadata, csiNodes *storagev1.CSINodeList) {
-	for _, csiNode := range csiNodes.Items {
-		nodeID := csiNode.Name
-		for _, driver := range csiNode.Spec.Drivers {
-			labeledMetadata[nodeID].AllocatableCount = *driver.Allocatable.Count
-			expectedMetadata[nodeID].AllocatableCount = getAllocatableCount(
-				expectedMetadata[nodeID].Volumes,
-				expectedMetadata[nodeID].ENIs)
-			if labeledMetadata[nodeID].AllocatableCount != expectedMetadata[nodeID].AllocatableCount {
-				Fail(fmt.Sprintf("Allocatable count mismatch for csi node %s, expected %d, got %d",
-					nodeID, expectedMetadata[nodeID].AllocatableCount, labeledMetadata[nodeID].AllocatableCount))
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
 
 func createCSIManagedVolume(cs kubernetes.Interface, pvc *corev1.PersistentVolumeClaim, pod *corev1.Pod, namespace string) string {
-	Eventually(func() bool {
-		pvcCheck, err := cs.CoreV1().PersistentVolumeClaims(namespace).Get(context.Background(), pvc.Name, metav1.GetOptions{})
-		if err != nil {
-			fmt.Printf("Error getting PVC: %v\n", err)
-			return false
-		}
-
-		if pvcCheck.Status.Phase == corev1.ClaimBound && pvcCheck.Spec.VolumeName != "" {
-			return true
-		}
-		return false
-	}, 5*time.Minute, 10*time.Second).Should(BeTrue(), "PVC should be bound with volume name")
-
-	updatedPod, err := cs.CoreV1().Pods(namespace).Get(context.Background(), pod.Name, metav1.GetOptions{})
-	Expect(err).NotTo(HaveOccurred(), "failed to get updated pod")
-
-	node, err := cs.CoreV1().Nodes().Get(context.Background(), updatedPod.Spec.NodeName, metav1.GetOptions{})
-	Expect(err).NotTo(HaveOccurred(), "failed to get node")
-
-	instanceID := parseProviderID(node.Spec.ProviderID)
-
-	return instanceID
+	_ = "STUB: not implemented"
+	return ""
 }
 
 func checkLabelsUpdated(cs kubernetes.Interface, labeledMetadata, expectedMetadata map[string]*instanceMetadata) {
-	By("Waiting for labels to update")
-	Eventually(func() bool {
-		updatedNodes, err := cs.CoreV1().Nodes().List(context.Background(), metav1.ListOptions{})
-		if err != nil {
-			return false
-		}
-
-		for _, node := range updatedNodes.Items {
-			id := parseProviderID(node.Spec.ProviderID)
-			vol, _ := strconv.Atoi(node.Labels[util.GetDriverName()+"/non-csi-ebs-volumes-count"])
-			eni, _ := strconv.Atoi(node.Labels[util.GetDriverName()+"/enis-count"])
-			labeledMetadata[id].Volumes = vol
-			labeledMetadata[id].ENIs = eni
-
-			if vol != expectedMetadata[id].Volumes || eni != expectedMetadata[id].ENIs {
-				return false
-			}
-		}
-		return true
-	}, "2m", "2s").Should(BeTrue(), "Node labels were not updated with correct volume count")
+	_ = "STUB: not implemented"
+	return
 }
 
 func checkCSINodesUpdated(cs kubernetes.Interface, labeledMetadata, expectedMetadata map[string]*instanceMetadata) {
-	By("Waiting for CSI node allocatable count to update")
-	Eventually(func() bool {
-		updatedCsiNodes, err := cs.StorageV1().CSINodes().List(context.Background(), metav1.ListOptions{})
-		if err != nil {
-			return false
-		}
-
-		for _, csiNode := range updatedCsiNodes.Items {
-			nodeID := csiNode.Name
-			for _, driver := range csiNode.Spec.Drivers {
-				labeledMetadata[nodeID].AllocatableCount = *driver.Allocatable.Count
-				expectedMetadata[nodeID].AllocatableCount = getAllocatableCount(
-					expectedMetadata[nodeID].Volumes,
-					expectedMetadata[nodeID].ENIs)
-				if labeledMetadata[nodeID].AllocatableCount != expectedMetadata[nodeID].AllocatableCount {
-					return false
-				}
-			}
-		}
-		return true
-	}, "2m", "2s").Should(BeTrue(), "CSI node allocatable count were not updated with correct count")
+	_ = "STUB: not implemented"
+	return
 }
 
 func createNonCSIManagedVolume(ec2svc *ec2.Client, metadata map[string]*instanceMetadata, changedCSIVolumeInstance string) (string, string) {
-	var instanceID string
-	if changedCSIVolumeInstance != "" {
-		instanceID = changedCSIVolumeInstance
-	} else {
-		for k := range metadata {
-			instanceID = k
-			break // a random instance is chosen for the test
-		}
-	}
-
-	createInput := &ec2.CreateVolumeInput{
-		AvailabilityZone: aws.String(metadata[instanceID].AvailabilityZone),
-		Size:             aws.Int32(1),
-		VolumeType:       types.VolumeTypeGp3,
-	}
-
-	volumeResult, err := ec2svc.CreateVolume(context.Background(), createInput)
-	Expect(err).NotTo(HaveOccurred(), "Failed to create volume")
-	volumeID := *volumeResult.VolumeId
-
-	By("Waiting for volume to become available")
-	Eventually(func() bool {
-		describeInput := &ec2.DescribeVolumesInput{
-			VolumeIds: []string{*volumeResult.VolumeId},
-		}
-
-		result, err := ec2svc.DescribeVolumes(context.Background(), describeInput)
-		if err != nil {
-			return false
-		}
-
-		if len(result.Volumes) == 0 {
-			return false
-		}
-
-		return result.Volumes[0].State == types.VolumeStateAvailable
-	}, "2m", "5s").Should(BeTrue(), "Volume did not become available within expected time")
-
-	return instanceID, volumeID
+	_ = "STUB: not implemented"
+	return "", ""
 }
+
+// a random instance is chosen for the test
 
 func attachVolume(ec2svc *ec2.Client, volumeID, instanceID, device string, metadata map[string]*instanceMetadata) bool {
-	attachInput := &ec2.AttachVolumeInput{
-		Device:     aws.String(device),
-		InstanceId: aws.String(instanceID),
-		VolumeId:   aws.String(volumeID),
-	}
-
-	_, err := ec2svc.AttachVolume(context.Background(), attachInput)
-	Expect(err).NotTo(HaveOccurred(), "Failed to attach volume")
-
-	metadata[instanceID].Volumes += 1
-	return true
+	_ = "STUB: not implemented"
+	return false
 }
 
-func deleteNodePod(nodeID string, cs clientset.Interface) {
-	pods, err := cs.CoreV1().Pods(driverNamespace).List(context.Background(), metav1.ListOptions{
-		FieldSelector: "spec.nodeName=" + nodeID,
-	})
-	Expect(err).NotTo(HaveOccurred(), "Failed to list pods")
+func deleteNodePod(nodeID string, cs clientset.Interface) { _ = "STUB: not implemented"; return }
 
-	var targetPod string
-	for _, pod := range pods.Items {
-		if strings.HasPrefix(pod.Name, "ebs-csi-node-") {
-			targetPod = pod.Name
-			break
-		}
-	}
+func deleteControllerPod(cs clientset.Interface) { _ = "STUB: not implemented"; return }
 
-	Expect(targetPod).NotTo(BeEmpty(), "Could not find ebs-csi-node pod on node "+nodeID)
-
-	deletePolicy := metav1.DeletePropagationForeground
-	deleteOptions := metav1.DeleteOptions{
-		PropagationPolicy: &deletePolicy,
-	}
-
-	err = cs.CoreV1().Pods(driverNamespace).Delete(context.Background(), targetPod, deleteOptions)
-	Expect(err).NotTo(HaveOccurred(), "Failed to delete ebs-csi-node pod "+targetPod)
-
-	By("Waiting for pod " + targetPod + " to be fully deleted")
-	Eventually(func() bool {
-		_, err := cs.CoreV1().Pods(driverNamespace).Get(context.Background(), targetPod, metav1.GetOptions{})
-		return errors.IsNotFound(err)
-	}, "2m", "2s").Should(BeTrue(), "Pod "+targetPod+" was not fully deleted in time")
-}
-
-func deleteControllerPod(cs clientset.Interface) {
-	deletePolicy := metav1.DeletePropagationForeground
-	deleteOptions := metav1.DeleteOptions{
-		PropagationPolicy: &deletePolicy,
-	}
-	listOptions := metav1.ListOptions{
-		LabelSelector: "app=ebs-csi-controller",
-	}
-
-	err := cs.CoreV1().Pods(driverNamespace).DeleteCollection(context.Background(), deleteOptions, listOptions)
-	Expect(err).NotTo(HaveOccurred(), "Failed to delete ebs-csi-controller pods")
-}
-
-func parseProviderID(providerID string) string {
-	awsInstanceIDRegex := "s\\.i-[a-z0-9]+|i-[a-z0-9]+$"
-
-	re := regexp.MustCompile(awsInstanceIDRegex)
-	instanceID := re.FindString(providerID)
-
-	return instanceID
-}
+func parseProviderID(providerID string) string { _ = "STUB: not implemented"; return "" }
 
 func createStorageClass(cs kubernetes.Interface) *v1.StorageClass {
-	storageClass := &storagev1.StorageClass{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "ebs-sc",
-		},
-		Provisioner:       "ebs.csi.aws.com",
-		VolumeBindingMode: func() *storagev1.VolumeBindingMode { v := storagev1.VolumeBindingWaitForFirstConsumer; return &v }()}
-
-	_, err := cs.StorageV1().StorageClasses().Create(context.Background(), storageClass, metav1.CreateOptions{})
-	if err != nil && errors.IsNotFound(err) {
-		Expect(err).NotTo(HaveOccurred(), "Failed to create storage class")
-	}
-	return storageClass
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func createPVC(cs kubernetes.Interface, namespace string) *corev1.PersistentVolumeClaim {
-	storageClassName := "ebs-sc"
-	pvc := &corev1.PersistentVolumeClaim{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "ebs-claim",
-		},
-		Spec: corev1.PersistentVolumeClaimSpec{
-			AccessModes: []corev1.PersistentVolumeAccessMode{
-				corev1.ReadWriteOnce,
-			},
-			StorageClassName: &storageClassName,
-			Resources: corev1.VolumeResourceRequirements{
-				Requests: corev1.ResourceList{
-					corev1.ResourceStorage: resource.MustParse("4Gi"),
-				},
-			},
-		},
-	}
-	_, err := cs.CoreV1().PersistentVolumeClaims(namespace).Create(context.Background(), pvc, metav1.CreateOptions{})
-	if err != nil {
-		Expect(err).NotTo(HaveOccurred(), "Failed to create pvc")
-	}
-	return pvc
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func createPod(cs kubernetes.Interface, namespace string) *corev1.Pod {
-	runAsNonRoot := true
-	runAsUser := int64(1000)
-	allowPrivilegeEscalation := false
-	pod := &corev1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name: "app",
-		},
-		Spec: corev1.PodSpec{
-			SecurityContext: &corev1.PodSecurityContext{
-				RunAsNonRoot: &runAsNonRoot,
-				RunAsUser:    &runAsUser,
-				SeccompProfile: &corev1.SeccompProfile{
-					Type: corev1.SeccompProfileTypeRuntimeDefault,
-				},
-			},
-			Containers: []corev1.Container{
-				{
-					Name:  "app",
-					Image: "public.ecr.aws/amazonlinux/amazonlinux",
-					VolumeMounts: []corev1.VolumeMount{
-						{
-							Name:      "persistent-storage",
-							MountPath: "/data",
-						},
-					},
-					SecurityContext: &corev1.SecurityContext{
-						AllowPrivilegeEscalation: &allowPrivilegeEscalation,
-						RunAsNonRoot:             &runAsNonRoot,
-						RunAsUser:                &runAsUser,
-						Capabilities: &corev1.Capabilities{
-							Drop: []corev1.Capability{"ALL"},
-						},
-						SeccompProfile: &corev1.SeccompProfile{
-							Type: corev1.SeccompProfileTypeRuntimeDefault,
-						},
-					},
-				},
-			},
-			Volumes: []corev1.Volume{
-				{
-					Name: "persistent-storage",
-					VolumeSource: corev1.VolumeSource{
-						PersistentVolumeClaim: &corev1.PersistentVolumeClaimVolumeSource{
-							ClaimName: "ebs-claim",
-						},
-					},
-				},
-			},
-		},
-	}
-	_, err := cs.CoreV1().Pods(namespace).Create(context.Background(), pod, metav1.CreateOptions{})
-	if err != nil {
-		Expect(err).NotTo(HaveOccurred(), "Failed to create pod")
-	}
-	return pod
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func cleanUpPod(cs kubernetes.Interface, namespace, name string) {
-	By("Deleting new pod")
-	err := cs.CoreV1().Pods(namespace).Delete(context.Background(), name, metav1.DeleteOptions{})
-	Expect(err).NotTo(HaveOccurred())
-
-	Eventually(func() bool {
-		_, err := cs.CoreV1().Pods(namespace).Get(context.Background(), name, metav1.GetOptions{})
-
-		return errors.IsNotFound(err)
-	}, "2m", "2s").Should(BeTrue())
-}
+func cleanUpPod(cs kubernetes.Interface, namespace, name string) { _ = "STUB: not implemented"; return }
 
 func cleanUpVolume(volumeID, instanceID string, ec2Client *ec2.Client, expectedMetadata map[string]*instanceMetadata) {
-	result, _ := ec2Client.DescribeVolumes(context.Background(), &ec2.DescribeVolumesInput{
-		VolumeIds: []string{volumeID},
-	})
-
-	volume := result.Volumes[0]
-
-	if volume.State == types.VolumeStateInUse {
-		By("Detaching the volume")
-
-		detachInput := &ec2.DetachVolumeInput{
-			VolumeId:   aws.String(volumeID),
-			InstanceId: aws.String(instanceID),
-		}
-
-		_, err := ec2Client.DetachVolume(context.Background(), detachInput)
-		Expect(err).NotTo(HaveOccurred(), "Failed to detach volume")
-
-		By("Waiting for volume to be detached")
-		Eventually(func() bool {
-			describeInput := &ec2.DescribeVolumesInput{
-				VolumeIds: []string{volumeID},
-			}
-
-			result, err := ec2Client.DescribeVolumes(context.Background(), describeInput)
-			if err != nil || len(result.Volumes) == 0 {
-				return false
-			}
-
-			return result.Volumes[0].State == types.VolumeStateAvailable
-		}, "2m", "2s").Should(BeTrue(), "Volume did not detach within expected time")
-	}
-
-	By("Deleting the volume")
-	deleteInput := &ec2.DeleteVolumeInput{
-		VolumeId: aws.String(volumeID),
-	}
-
-	_, err := ec2Client.DeleteVolume(context.Background(), deleteInput)
-	Expect(err).NotTo(HaveOccurred(), "Failed to delete volume")
-	expectedMetadata[instanceID].Volumes -= 1
+	_ = "STUB: not implemented"
+	return
 }
 
-func cleanUpPVC(cs kubernetes.Interface, namespace, name string) {
-	By("Deleting PVC")
-	err := cs.CoreV1().PersistentVolumeClaims(namespace).Delete(context.Background(), name, metav1.DeleteOptions{})
-	Expect(err).NotTo(HaveOccurred())
+func cleanUpPVC(cs kubernetes.Interface, namespace, name string) { _ = "STUB: not implemented"; return }
 
-	Eventually(func() bool {
-		_, err := cs.CoreV1().PersistentVolumeClaims(namespace).Get(context.Background(), name, metav1.GetOptions{})
-		return errors.IsNotFound(err)
-	}, "2m", "5s").Should(BeTrue())
-}
-
-func cleanUpStorageClass(cs kubernetes.Interface, name string) {
-	By("Deleting StorageClass")
-	err := cs.StorageV1().StorageClasses().Delete(context.Background(), name, metav1.DeleteOptions{})
-	Expect(err).NotTo(HaveOccurred())
-
-	Eventually(func() bool {
-		_, err := cs.StorageV1().StorageClasses().Get(context.Background(), name, metav1.GetOptions{})
-		return errors.IsNotFound(err)
-	}, "2m", "5s").Should(BeTrue())
-}
+func cleanUpStorageClass(cs kubernetes.Interface, name string) { _ = "STUB: not implemented"; return }

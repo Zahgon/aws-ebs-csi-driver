@@ -60,95 +60,33 @@ type AsyncEC2Collector struct {
 }
 
 // Describe sends the descriptor of each metric in the AsyncEC2Collector to Prometheus.
-func (c *AsyncEC2Collector) Describe(ch chan<- *prometheus.Desc) {
-	ch <- c.detachingDuration
-	ch <- c.collectionDuration.Desc()
-	ch <- c.scrapesTotal.Desc()
-}
+func (c *AsyncEC2Collector) Describe(ch chan<- *prometheus.Desc) { _ = "STUB: not implemented"; return }
 
 // Collect is invoked by Prometheus at collection time for emitting AsyncEC2Collector metrics.
 func (c *AsyncEC2Collector) Collect(ch chan<- prometheus.Metric) {
+	_ = "STUB: not implemented"
 	// Meta metrics for metric collection
-	c.scrapesTotal.Inc()
-	start := time.Now()
-	defer func() {
-		duration := time.Since(start).Seconds()
-		c.collectionDuration.Observe(duration)
-
-		ch <- c.collectionDuration
-		ch <- c.scrapesTotal
-	}()
-
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	for k, v := range c.detachingVolumes {
-		if time.Since(v.detachStart) > c.minDurationThreshold {
-			if v.attachmentState != types.VolumeAttachmentStateDetached {
-				ch <- prometheus.MustNewConstMetric(c.detachingDuration, prometheus.CounterValue, time.Since(v.detachStart).Seconds(), k.volumeID, k.instanceID, string(v.attachmentState))
-			}
-		}
-	}
+	return
 }
 
 // TrackDetachment tracks the state of a volume that we expect to detach in our AsyncEC2Collector cache.
 func (c *AsyncEC2Collector) TrackDetachment(volumeID, instanceID string, attachmentState types.VolumeAttachmentState) {
-	if c == nil {
-		return
-	}
-
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	a := attachment{volumeID: volumeID, instanceID: instanceID}
-
-	// Clear if detached
-	if attachmentState == types.VolumeAttachmentStateDetached || attachmentState == "" {
-		delete(c.detachingVolumes, a)
-	}
-
-	// Check if first time tracking this attachment
-	var detachStart time.Time
-	now := time.Now()
-	dv, ok := c.detachingVolumes[a]
-	if ok {
-		detachStart = dv.detachStart
-	} else {
-		detachStart = now
-	}
-
-	c.detachingVolumes[a] = detachingVolume{
-		detachStart:          detachStart,
-		lastDetachStateCheck: now,
-		attachmentState:      attachmentState,
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// Clear if detached
+
+// Check if first time tracking this attachment
 
 // ClearDetachMetric ensures AsyncEC2Collector is not emitting metrics for a given attachment.
 func (c *AsyncEC2Collector) ClearDetachMetric(volumeID, instanceID string) {
-	if c == nil {
-		return
-	}
-
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	a := attachment{volumeID: volumeID, instanceID: instanceID}
-	delete(c.detachingVolumes, a)
+	_ = "STUB: not implemented"
+	return
 }
 
 // cleanupCache clears the detachingVolumes cache if no update has been made since minTimeSinceLastUpdate ago.
 func (c *AsyncEC2Collector) cleanupCache(minTimeSinceLastUpdate time.Duration) {
-	if c == nil {
-		return
-	}
-
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
-
-	for k, v := range c.detachingVolumes {
-		if time.Since(v.lastDetachStateCheck) > minTimeSinceLastUpdate {
-			delete(c.detachingVolumes, k)
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }

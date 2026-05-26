@@ -42,8 +42,6 @@ package batcher
 
 import (
 	"time"
-
-	"k8s.io/klog/v2"
 )
 
 // Batcher manages the batching and execution of tasks. It collects tasks up to a specified limit (maxEntries) or
@@ -88,85 +86,23 @@ type taskEntry[InputType comparable, ResultType any] struct {
 // Upon instantiation, it immediately launches the internal task manager as a goroutine to oversee batch operations.
 // The provided execFunc is used to execute batch requests.
 func New[InputType comparable, ResultType any](entries int, delay time.Duration, fn func(inputs []InputType) (map[InputType]ResultType, error)) *Batcher[InputType, ResultType] {
-	klog.V(7).InfoS("New: initializing Batcher", "maxEntries", entries, "maxDelay", delay)
-
-	b := &Batcher[InputType, ResultType]{
-		execFunc:     fn,
-		pendingTasks: make(map[InputType][]chan BatchResult[ResultType]),
-		taskChan:     make(chan taskEntry[InputType, ResultType], entries),
-		maxEntries:   entries,
-		maxDelay:     delay,
-	}
-
-	go b.taskManager()
-	return b
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // AddTask adds a new task to the Batcher's queue.
 func (b *Batcher[InputType, ResultType]) AddTask(t InputType, resultChan chan BatchResult[ResultType]) {
-	klog.V(7).InfoS("AddTask: queueing task", "task", t)
-	b.taskChan <- taskEntry[InputType, ResultType]{task: t, resultChan: resultChan}
+	_ = "STUB: not implemented"
+	return
 }
 
 // taskManager runs as a goroutine, continuously managing the Batcher's internal state.
 // It batches tasks and triggers their execution based on set constraints (maxEntries and maxDelay).
-func (b *Batcher[InputType, ResultType]) taskManager() {
-	klog.V(7).InfoS("taskManager: started taskManager")
-	var timerCh <-chan time.Time
-
-	exec := func() {
-		timerCh = nil
-		go b.execute(b.pendingTasks)
-		b.pendingTasks = make(map[InputType][]chan BatchResult[ResultType])
-	}
-
-	for {
-		select {
-		case <-timerCh:
-			klog.V(7).InfoS("taskManager: maxDelay execution")
-			exec()
-
-		case t := <-b.taskChan:
-			if _, exists := b.pendingTasks[t.task]; exists {
-				klog.InfoS("taskManager: duplicate task detected", "task", t.task)
-			} else {
-				b.pendingTasks[t.task] = make([]chan BatchResult[ResultType], 0)
-			}
-			b.pendingTasks[t.task] = append(b.pendingTasks[t.task], t.resultChan)
-
-			if len(b.pendingTasks) == 1 {
-				klog.V(7).InfoS("taskManager: starting maxDelay timer")
-				timerCh = time.After(b.maxDelay)
-			}
-
-			if len(b.pendingTasks) == b.maxEntries {
-				klog.V(7).InfoS("taskManager: maxEntries reached")
-				exec()
-			}
-		}
-	}
-}
+func (b *Batcher[InputType, ResultType]) taskManager() { _ = "STUB: not implemented"; return }
 
 // execute is called by taskManager to execute a batch of tasks.
 // It calls the Batcher's internal execFunc and then sends the results of each task to its corresponding result channels.
 func (b *Batcher[InputType, ResultType]) execute(pendingTasks map[InputType][]chan BatchResult[ResultType]) {
-	batch := make([]InputType, 0, len(pendingTasks))
-	for task := range pendingTasks {
-		batch = append(batch, task)
-	}
-
-	klog.V(7).InfoS("execute: calling execFunc", "batchSize", len(batch))
-	resultsMap, err := b.execFunc(batch)
-	if err != nil {
-		klog.ErrorS(err, "execute: error executing batch")
-	}
-
-	klog.V(7).InfoS("execute: sending batch results", "batch", batch)
-	for _, task := range batch {
-		r := resultsMap[task]
-		for _, ch := range pendingTasks[task] {
-			ch <- BatchResult[ResultType]{Result: r, Err: err}
-		}
-	}
-	klog.V(7).InfoS("execute: finished execution", "batchSize", len(batch))
+	_ = "STUB: not implemented"
+	return
 }

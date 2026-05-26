@@ -6,7 +6,6 @@ package cloud
 
 import (
 	context "context"
-	reflect "reflect"
 
 	ec2 "github.com/aws/aws-sdk-go-v2/service/ec2"
 	types "github.com/aws/aws-sdk-go-v2/service/ec2/types"
@@ -25,324 +24,260 @@ type MockCloudMockRecorder struct {
 }
 
 // NewMockCloud creates a new mock instance.
-func NewMockCloud(ctrl *gomock.Controller) *MockCloud {
-	mock := &MockCloud{ctrl: ctrl}
-	mock.recorder = &MockCloudMockRecorder{mock}
-	return mock
-}
+func NewMockCloud(ctrl *gomock.Controller) *MockCloud { _ = "STUB: not implemented"; return nil }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockCloud) EXPECT() *MockCloudMockRecorder {
-	return m.recorder
+	_ = "STUB: not implemented"
+
+	// AttachDisk mocks base method.
+	return nil
 }
 
-// AttachDisk mocks base method.
 func (m *MockCloud) AttachDisk(ctx context.Context, volumeID, nodeID string) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AttachDisk", ctx, volumeID, nodeID)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 // AttachDisk indicates an expected call of AttachDisk.
 func (mr *MockCloudMockRecorder) AttachDisk(ctx, volumeID, nodeID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AttachDisk", reflect.TypeOf((*MockCloud)(nil).AttachDisk), ctx, volumeID, nodeID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // AvailabilityZones mocks base method.
 func (m *MockCloud) AvailabilityZones(ctx context.Context) (map[string]struct{}, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "AvailabilityZones", ctx)
-	ret0, _ := ret[0].(map[string]struct{})
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // AvailabilityZones indicates an expected call of AvailabilityZones.
 func (mr *MockCloudMockRecorder) AvailabilityZones(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AvailabilityZones", reflect.TypeOf((*MockCloud)(nil).AvailabilityZones), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CreateDisk mocks base method.
 func (m *MockCloud) CreateDisk(ctx context.Context, volumeName string, diskOptions *DiskOptions) (*Disk, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateDisk", ctx, volumeName, diskOptions)
-	ret0, _ := ret[0].(*Disk)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CreateDisk indicates an expected call of CreateDisk.
 func (mr *MockCloudMockRecorder) CreateDisk(ctx, volumeName, diskOptions interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateDisk", reflect.TypeOf((*MockCloud)(nil).CreateDisk), ctx, volumeName, diskOptions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // CreateSnapshot mocks base method.
 func (m *MockCloud) CreateSnapshot(ctx context.Context, volumeID string, snapshotOptions *SnapshotOptions) (*Snapshot, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateSnapshot", ctx, volumeID, snapshotOptions)
-	ret0, _ := ret[0].(*Snapshot)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // CreateSnapshot indicates an expected call of CreateSnapshot.
 func (mr *MockCloudMockRecorder) CreateSnapshot(ctx, volumeID, snapshotOptions interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateSnapshot", reflect.TypeOf((*MockCloud)(nil).CreateSnapshot), ctx, volumeID, snapshotOptions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DeleteDisk mocks base method.
 func (m *MockCloud) DeleteDisk(ctx context.Context, volumeID string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteDisk", ctx, volumeID)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // DeleteDisk indicates an expected call of DeleteDisk.
 func (mr *MockCloudMockRecorder) DeleteDisk(ctx, volumeID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteDisk", reflect.TypeOf((*MockCloud)(nil).DeleteDisk), ctx, volumeID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DeleteSnapshot mocks base method.
 func (m *MockCloud) DeleteSnapshot(ctx context.Context, snapshotID string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DeleteSnapshot", ctx, snapshotID)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // DeleteSnapshot indicates an expected call of DeleteSnapshot.
 func (mr *MockCloudMockRecorder) DeleteSnapshot(ctx, snapshotID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteSnapshot", reflect.TypeOf((*MockCloud)(nil).DeleteSnapshot), ctx, snapshotID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DetachDisk mocks base method.
 func (m *MockCloud) DetachDisk(ctx context.Context, volumeID, nodeID string) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DetachDisk", ctx, volumeID, nodeID)
-	ret0, _ := ret[0].(error)
-	return ret0
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DetachDisk indicates an expected call of DetachDisk.
 func (mr *MockCloudMockRecorder) DetachDisk(ctx, volumeID, nodeID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DetachDisk", reflect.TypeOf((*MockCloud)(nil).DetachDisk), ctx, volumeID, nodeID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // DryRun mocks base method.
-func (m *MockCloud) DryRun(ctx context.Context) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "DryRun", ctx)
-	ret0, _ := ret[0].(error)
-	return ret0
-}
+func (m *MockCloud) DryRun(ctx context.Context) error { _ = "STUB: not implemented"; return nil }
 
 // DryRun indicates an expected call of DryRun.
 func (mr *MockCloudMockRecorder) DryRun(ctx interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DryRun", reflect.TypeOf((*MockCloud)(nil).DryRun), ctx)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // EnableFastSnapshotRestores mocks base method.
 func (m *MockCloud) EnableFastSnapshotRestores(ctx context.Context, availabilityZones []string, snapshotID string) (*ec2.EnableFastSnapshotRestoresOutput, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "EnableFastSnapshotRestores", ctx, availabilityZones, snapshotID)
-	ret0, _ := ret[0].(*ec2.EnableFastSnapshotRestoresOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // EnableFastSnapshotRestores indicates an expected call of EnableFastSnapshotRestores.
 func (mr *MockCloudMockRecorder) EnableFastSnapshotRestores(ctx, availabilityZones, snapshotID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EnableFastSnapshotRestores", reflect.TypeOf((*MockCloud)(nil).EnableFastSnapshotRestores), ctx, availabilityZones, snapshotID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetDiskByID mocks base method.
 func (m *MockCloud) GetDiskByID(ctx context.Context, volumeID string) (*Disk, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDiskByID", ctx, volumeID)
-	ret0, _ := ret[0].(*Disk)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetDiskByID indicates an expected call of GetDiskByID.
 func (mr *MockCloudMockRecorder) GetDiskByID(ctx, volumeID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDiskByID", reflect.TypeOf((*MockCloud)(nil).GetDiskByID), ctx, volumeID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetDiskByName mocks base method.
 func (m *MockCloud) GetDiskByName(ctx context.Context, name string, capacityBytes int64) (*Disk, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDiskByName", ctx, name, capacityBytes)
-	ret0, _ := ret[0].(*Disk)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetDiskByName indicates an expected call of GetDiskByName.
 func (mr *MockCloudMockRecorder) GetDiskByName(ctx, name, capacityBytes interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDiskByName", reflect.TypeOf((*MockCloud)(nil).GetDiskByName), ctx, name, capacityBytes)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetInstancesPatching mocks base method.
 func (m *MockCloud) GetInstancesPatching(ctx context.Context, nodeIDs []string) ([]*types.Instance, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetInstancesPatching", ctx, nodeIDs)
-	ret0, _ := ret[0].([]*types.Instance)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetInstancesPatching indicates an expected call of GetInstancesPatching.
 func (mr *MockCloudMockRecorder) GetInstancesPatching(ctx, nodeIDs interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstancesPatching", reflect.TypeOf((*MockCloud)(nil).GetInstancesPatching), ctx, nodeIDs)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetSnapshotByID mocks base method.
 func (m *MockCloud) GetSnapshotByID(ctx context.Context, snapshotID string) (*Snapshot, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSnapshotByID", ctx, snapshotID)
-	ret0, _ := ret[0].(*Snapshot)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetSnapshotByID indicates an expected call of GetSnapshotByID.
 func (mr *MockCloudMockRecorder) GetSnapshotByID(ctx, snapshotID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSnapshotByID", reflect.TypeOf((*MockCloud)(nil).GetSnapshotByID), ctx, snapshotID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetSnapshotByName mocks base method.
 func (m *MockCloud) GetSnapshotByName(ctx context.Context, name string) (*Snapshot, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSnapshotByName", ctx, name)
-	ret0, _ := ret[0].(*Snapshot)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetSnapshotByName indicates an expected call of GetSnapshotByName.
 func (mr *MockCloudMockRecorder) GetSnapshotByName(ctx, name interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSnapshotByName", reflect.TypeOf((*MockCloud)(nil).GetSnapshotByName), ctx, name)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetVolumeIDByNodeAndDevice mocks base method.
 func (m *MockCloud) GetVolumeIDByNodeAndDevice(ctx context.Context, nodeID, deviceName string) (string, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVolumeIDByNodeAndDevice", ctx, nodeID, deviceName)
-	ret0, _ := ret[0].(string)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 // GetVolumeIDByNodeAndDevice indicates an expected call of GetVolumeIDByNodeAndDevice.
 func (mr *MockCloudMockRecorder) GetVolumeIDByNodeAndDevice(ctx, nodeID, deviceName interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVolumeIDByNodeAndDevice", reflect.TypeOf((*MockCloud)(nil).GetVolumeIDByNodeAndDevice), ctx, nodeID, deviceName)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // IsVolumeInitialized mocks base method.
 func (m *MockCloud) IsVolumeInitialized(ctx context.Context, volumeID string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "IsVolumeInitialized", ctx, volumeID)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // IsVolumeInitialized indicates an expected call of IsVolumeInitialized.
 func (mr *MockCloudMockRecorder) IsVolumeInitialized(ctx, volumeID interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "IsVolumeInitialized", reflect.TypeOf((*MockCloud)(nil).IsVolumeInitialized), ctx, volumeID)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ListSnapshots mocks base method.
 func (m *MockCloud) ListSnapshots(ctx context.Context, volumeID string, maxResults int32, nextToken string) (*ListSnapshotsResponse, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ListSnapshots", ctx, volumeID, maxResults, nextToken)
-	ret0, _ := ret[0].(*ListSnapshotsResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // ListSnapshots indicates an expected call of ListSnapshots.
 func (mr *MockCloudMockRecorder) ListSnapshots(ctx, volumeID, maxResults, nextToken interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSnapshots", reflect.TypeOf((*MockCloud)(nil).ListSnapshots), ctx, volumeID, maxResults, nextToken)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // LockSnapshot mocks base method.
 func (m *MockCloud) LockSnapshot(ctx context.Context, lockOptions *SnapshotLockOptions) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "LockSnapshot", ctx, lockOptions)
-	ret0, _ := ret[0].(error)
-	return ret0
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // LockSnapshot indicates an expected call of LockSnapshot.
 func (mr *MockCloudMockRecorder) LockSnapshot(ctx, lockOptions interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LockSnapshot", reflect.TypeOf((*MockCloud)(nil).LockSnapshot), ctx, lockOptions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ModifyTags mocks base method.
 func (m *MockCloud) ModifyTags(ctx context.Context, volumeID string, tagOptions ModifyTagsOptions) error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ModifyTags", ctx, volumeID, tagOptions)
-	ret0, _ := ret[0].(error)
-	return ret0
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ModifyTags indicates an expected call of ModifyTags.
 func (mr *MockCloudMockRecorder) ModifyTags(ctx, volumeID, tagOptions interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ModifyTags", reflect.TypeOf((*MockCloud)(nil).ModifyTags), ctx, volumeID, tagOptions)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ResizeOrModifyDisk mocks base method.
 func (m *MockCloud) ResizeOrModifyDisk(ctx context.Context, volumeID string, newSizeBytes int64, options *ModifyDiskOptions) (int32, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ResizeOrModifyDisk", ctx, volumeID, newSizeBytes, options)
-	ret0, _ := ret[0].(int32)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
 // ResizeOrModifyDisk indicates an expected call of ResizeOrModifyDisk.
 func (mr *MockCloudMockRecorder) ResizeOrModifyDisk(ctx, volumeID, newSizeBytes, options interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ResizeOrModifyDisk", reflect.TypeOf((*MockCloud)(nil).ResizeOrModifyDisk), ctx, volumeID, newSizeBytes, options)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // WaitForAttachmentState mocks base method.
 func (m *MockCloud) WaitForAttachmentState(ctx context.Context, expectedState types.VolumeAttachmentState, volumeID, expectedInstance, expectedDevice string, alreadyAssigned bool, expectedCardIndex *int32) (*types.VolumeAttachment, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "WaitForAttachmentState", ctx, expectedState, volumeID, expectedInstance, expectedDevice, alreadyAssigned, expectedCardIndex)
-	ret0, _ := ret[0].(*types.VolumeAttachment)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // WaitForAttachmentState indicates an expected call of WaitForAttachmentState.
 func (mr *MockCloudMockRecorder) WaitForAttachmentState(ctx, expectedState, volumeID, expectedInstance, expectedDevice, alreadyAssigned, expectedCardIndex interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "WaitForAttachmentState", reflect.TypeOf((*MockCloud)(nil).WaitForAttachmentState), ctx, expectedState, volumeID, expectedInstance, expectedDevice, alreadyAssigned, expectedCardIndex)
+	_ = "STUB: not implemented"
+	return nil
 }

@@ -20,14 +20,6 @@ package mounter
 
 import (
 	"errors"
-	"fmt"
-	"regexp"
-
-	"github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/util"
-	"golang.org/x/sys/windows"
-
-	"k8s.io/klog/v2"
-	mountutils "k8s.io/mount-utils"
 )
 
 var (
@@ -35,82 +27,39 @@ var (
 )
 
 func (m *NodeMounter) FindDevicePath(devicePath, volumeID, _, _ string) (string, error) {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		return proxyMounter.FindDevicePath(devicePath, volumeID, "", "")
-	case *CSIProxyMounter:
-		return proxyMounter.FindDevicePath(devicePath, volumeID, "", "")
-	default:
-		return "", ErrUnsupportedMounter
-	}
+	_ = "STUB: not implemented"
+	return "", nil
 }
 
 func (m *NodeMounter) PreparePublishTarget(target string) error {
+	_ = "STUB: not implemented"
 	// On Windows, Mount will create the parent of target and mklink (create a symbolic link) at target later, so don't create a
 	// directory at target now. Otherwise mklink will error: "Cannot create a file when that file already exists".
 	// Instead, delete the target if it already exists (like if it was created by kubelet <1.20)
 	// https://github.com/kubernetes/kubernetes/pull/88759
-	klog.V(4).InfoS("NodePublishVolume: removing dir", "target", target)
-	exists, err := m.PathExists(target)
-	if err != nil {
-		return fmt.Errorf("error checking path %q exists: %v", target, err)
-	}
-
-	if !exists {
-		return nil // If the target does not exist, no action is necessary
-	}
-
-	// Handle different mounter implementations
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		if err := proxyMounter.Rmdir(target); err != nil {
-			return fmt.Errorf("error Rmdir target %q: %v", target, err)
-		}
-	case *CSIProxyMounter:
-		if err := proxyMounter.Rmdir(target); err != nil {
-			return fmt.Errorf("error Rmdir target %q: %v", target, err)
-		}
-	default:
-		return ErrUnsupportedMounter
-	}
-
 	return nil
 }
 
+// If the target does not exist, no action is necessary
+
+// Handle different mounter implementations
+
 // IsBlockDevice checks if the given path is a block device
 func (m *NodeMounter) IsBlockDevice(fullPath string) (bool, error) {
+	_ = "STUB: not implemented"
+
+	// getBlockSizeBytes gets the size of the disk in bytes
 	return false, nil
 }
 
-// getBlockSizeBytes gets the size of the disk in bytes
 func (m *NodeMounter) GetBlockSizeBytes(devicePath string) (int64, error) {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		sizeInBytes, err := proxyMounter.GetDeviceSize(devicePath)
-		if err != nil {
-			return -1, err
-		}
-		return sizeInBytes, nil
-	case *CSIProxyMounter:
-		sizeInBytes, err := proxyMounter.GetDeviceSize(devicePath)
-		if err != nil {
-			return -1, err
-		}
-		return sizeInBytes, nil
-	default:
-		return -1, ErrUnsupportedMounter
-	}
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
 func (m *NodeMounter) FormatAndMountSensitiveWithFormatOptions(source string, target string, fstype string, options []string, sensitiveOptions []string, formatOptions []string) error {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		return proxyMounter.FormatAndMountSensitiveWithFormatOptions(source, target, fstype, options, sensitiveOptions, formatOptions)
-	case *CSIProxyMounter:
-		return proxyMounter.FormatAndMountSensitiveWithFormatOptions(source, target, fstype, options, sensitiveOptions, formatOptions)
-	default:
-		return ErrUnsupportedMounter
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetDeviceNameFromMount returns the volume ID for a mount path.
@@ -122,201 +71,65 @@ func (m *NodeMounter) FormatAndMountSensitiveWithFormatOptions(source string, ta
 // Command to determine ref count would be something like:
 // Get-Volume -UniqueId "\\?\Volume{7c3da0c1-0000-0000-0000-010000000000}\" | Get-Partition | Select AccessPaths
 func (m *NodeMounter) GetDeviceNameFromMount(mountPath string) (string, int, error) {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	// HACK change csi-proxy behavior instead of relying on fragile internal
-	// implementation details!
-	// if err contains '"(Get-Item...).Target, output: , error: <nil>' then the
-	// internal Get-Item cmdlet didn't fail but no item/device was found at the
-	// path so we should return empty string and nil error just like the Linux
-	// implementation would.
-	case *CSIProxyMounterV2:
-		deviceName, err := proxyMounter.GetDeviceNameFromMount(mountPath, "")
-		if err != nil {
-			return handleGetDeviceNameFromMountError(err)
-		}
-		return deviceName, 1, nil
-	case *CSIProxyMounter:
-		deviceName, err := proxyMounter.GetDeviceNameFromMount(mountPath, "")
-		if err != nil {
-			return handleGetDeviceNameFromMountError(err)
-		}
-		return deviceName, 1, nil
-	default:
-		return "", 0, ErrUnsupportedMounter
-	}
+	_ = "STUB: not implemented"
+	return "", 0, nil
 }
+
+// HACK change csi-proxy behavior instead of relying on fragile internal
+// implementation details!
+// if err contains '"(Get-Item...).Target, output: , error: <nil>' then the
+// internal Get-Item cmdlet didn't fail but no item/device was found at the
+// path so we should return empty string and nil error just like the Linux
+// implementation would.
 
 // handleGetDeviceNameFromMountError processes common error patterns for GetDeviceNameFromMount
 func handleGetDeviceNameFromMountError(err error) (string, int, error) {
+	_ = "STUB: not implemented"
 	// Handling common error pattern as seen in previous implementations
-	pattern := `(Get-Item -Path \S+).Target, output: , error: <nil>|because it does not exist`
-	matched, matchErr := regexp.MatchString(pattern, err.Error())
-	if matched {
-		return "", 0, nil // No device found, but not an error condition
-	}
-	if matchErr != nil {
-		return "", 0, fmt.Errorf("error processing error message: %v, matching pattern %q: %v", err, pattern, matchErr)
-	}
-	return "", 0, fmt.Errorf("error getting device name from mount: %v", err)
+	return "", 0, nil
 }
+
+// No device found, but not an error condition
 
 // IsCorruptedMnt return true if err is about corrupted mount point
-func (m *NodeMounter) IsCorruptedMnt(err error) bool {
-	return mountutils.IsCorruptedMnt(err)
-}
+func (m *NodeMounter) IsCorruptedMnt(err error) bool { _ = "STUB: not implemented"; return false }
 
-func (m *NodeMounter) MakeFile(path string) error {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		return proxyMounter.MakeFile(path)
-	case *CSIProxyMounter:
-		return proxyMounter.MakeFile(path)
-	default:
-		return ErrUnsupportedMounter
-	}
-}
+func (m *NodeMounter) MakeFile(path string) error { _ = "STUB: not implemented"; return nil }
 
-func (m *NodeMounter) MakeDir(path string) error {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		return proxyMounter.MakeDir(path)
-	case *CSIProxyMounter:
-		return proxyMounter.MakeDir(path)
-	default:
-		return ErrUnsupportedMounter
-	}
-}
+func (m *NodeMounter) MakeDir(path string) error { _ = "STUB: not implemented"; return nil }
 
 func (m *NodeMounter) PathExists(path string) (bool, error) {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		return proxyMounter.ExistsPath(path)
-	case *CSIProxyMounter:
-		return proxyMounter.ExistsPath(path)
-	default:
-		return false, ErrUnsupportedMounter
-	}
-}
-
-func (m *NodeMounter) Resize(devicePath, deviceMountPath string) (bool, error) {
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		// Refresh the host storage cache before resizing to ensure Windows has an updated view of disk geometry.
-		if err := proxyMounter.Rescan(); err != nil {
-			klog.ErrorS(err, "Rescan failed during Resize")
-		}
-		return proxyMounter.ResizeVolume(deviceMountPath)
-	case *CSIProxyMounter:
-		if err := proxyMounter.Rescan(); err != nil {
-			klog.ErrorS(err, "Rescan failed during Resize")
-		}
-		return proxyMounter.ResizeVolume(deviceMountPath)
-	default:
-		return false, ErrUnsupportedMounter
-	}
-}
-
-// NeedResize called at NodeStage to ensure file system is the correct size
-func (m *NodeMounter) NeedResize(devicePath, deviceMountPath string) (bool, error) {
-	var err error
-	var deviceSize, fsSize int64
-
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		if err := proxyMounter.Rescan(); err != nil {
-			klog.ErrorS(err, "Rescan failed during NeedResize")
-		}
-		deviceSize, err = proxyMounter.GetDeviceSize(devicePath)
-		if err != nil {
-			return false, fmt.Errorf("failed to get device size: %w", err)
-		}
-		fsSize, err = proxyMounter.GetVolumeSizeInBytes(deviceMountPath)
-		if err != nil {
-			return false, fmt.Errorf("failed to get filesystem size: %w", err)
-		}
-	case *CSIProxyMounter:
-		if err := proxyMounter.Rescan(); err != nil {
-			klog.ErrorS(err, "Rescan failed during NeedResize")
-		}
-		deviceSize, err = proxyMounter.GetDeviceSize(devicePath)
-		if err != nil {
-			return false, fmt.Errorf("failed to get device size: %w", err)
-		}
-		fsSize, err = proxyMounter.GetVolumeSizeInBytes(deviceMountPath)
-		if err != nil {
-			return false, fmt.Errorf("failed to get filesystem size: %w", err)
-		}
-	default:
-		return false, ErrUnsupportedMounter
-	}
-
-	// Tolerate one block difference (4096 bytes)
-	if deviceSize <= util.DefaultBlockSize+fsSize {
-		return true, nil
-	}
+	_ = "STUB: not implemented"
 	return false, nil
 }
 
-// Unmount volume from target path
-func (m *NodeMounter) Unpublish(target string) error {
-	var err error
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		err = proxyMounter.Rmdir(target)
-	case *CSIProxyMounter:
-		err = proxyMounter.Rmdir(target)
-	default:
-		return ErrUnsupportedMounter
-	}
-
-	if err != nil {
-		return fmt.Errorf("failed to remove directory: %w", err)
-	}
-
-	return nil
+func (m *NodeMounter) Resize(devicePath, deviceMountPath string) (bool, error) {
+	_ = "STUB: not implemented"
+	return false, nil
 }
+
+// Refresh the host storage cache before resizing to ensure Windows has an updated view of disk geometry.
+
+// NeedResize called at NodeStage to ensure file system is the correct size
+func (m *NodeMounter) NeedResize(devicePath, deviceMountPath string) (bool, error) {
+	_ = "STUB: not implemented"
+	return false, nil
+}
+
+// Tolerate one block difference (4096 bytes)
+
+// Unmount volume from target path
+func (m *NodeMounter) Unpublish(target string) error { _ = "STUB: not implemented"; return nil }
 
 // Unmount volume from staging path
 // usually this staging path is a global directory on the node
-func (m *NodeMounter) Unstage(target string) error {
-	var err error
-	switch proxyMounter := m.SafeFormatAndMount.Interface.(type) {
-	case *CSIProxyMounterV2:
-		err = proxyMounter.Unmount(target)
-	case *CSIProxyMounter:
-		err = proxyMounter.Unmount(target)
-	default:
-		return ErrUnsupportedMounter
-	}
-
-	if err != nil {
-		return fmt.Errorf("unmount failed: %w", err)
-	}
-
-	return nil
-}
+func (m *NodeMounter) Unstage(target string) error { _ = "STUB: not implemented"; return nil }
 
 // GetVolumeStats acquires byte statistics of filesystem at volumePath.
 func (m *NodeMounter) GetVolumeStats(volumePath string) (VolumeStats, error) {
-	stats := VolumeStats{}
-	var availableBytes, totalBytes, totalFreeBytes uint64
-
-	// Need to ensure directory path to prevent error code: The directory name is invalid. (#99173)
-	// See https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-
-	err := windows.GetDiskFreeSpaceEx(
-		windows.StringToUTF16Ptr(volumePath),
-		&availableBytes,
-		&totalBytes,
-		&totalFreeBytes,
-	)
-	if err != nil {
-		return VolumeStats{}, err
-	}
-
-	stats.AvailableBytes = int64(availableBytes)
-	stats.TotalBytes = int64(totalBytes)
-
-	stats.UsedBytes = int64(totalBytes - totalFreeBytes)
-
-	return stats, nil
+	_ = "STUB: not implemented"
+	return *new(VolumeStats), nil
 }
+
+// Need to ensure directory path to prevent error code: The directory name is invalid. (#99173)
+// See https://docs.microsoft.com/en-us/windows/win32/debug/system-error-codes--0-499-

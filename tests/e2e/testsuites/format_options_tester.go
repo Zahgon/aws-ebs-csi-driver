@@ -15,7 +15,6 @@ limitations under the License.
 package testsuites
 
 import (
-	ebscsidriver "github.com/kubernetes-sigs/aws-ebs-csi-driver/pkg/driver"
 	"github.com/kubernetes-sigs/aws-ebs-csi-driver/tests/e2e/driver"
 	. "github.com/onsi/ginkgo/v2"
 	v1 "k8s.io/api/core/v1"
@@ -29,31 +28,11 @@ type FormatOptionTest struct {
 }
 
 func (t *FormatOptionTest) Run(client clientset.Interface, namespace *v1.Namespace, ebsDriver driver.PVTestDriver) {
-	By("setting up pvc with custom format option")
-	volumeDetails := CreateVolumeDetails(t.CreateVolumeParameters, driver.MinimumSizeForVolumeType(t.CreateVolumeParameters[ebscsidriver.VolumeTypeKey]))
-	testPvc, _ := volumeDetails.SetupDynamicPersistentVolumeClaim(client, namespace, ebsDriver)
-	defer testPvc.Cleanup()
-
-	By("deploying pod with custom format option")
-	formatOptionMountPod := createPodWithVolume(client, namespace, PodCmdWriteToVolume(DefaultMountPath), testPvc, volumeDetails)
-	defer formatOptionMountPod.Cleanup()
-	formatOptionMountPod.WaitForSuccess()
-
-	By("testing that pvc is able to be resized")
-	ResizeTestPvc(client, namespace, testPvc, DefaultSizeIncreaseGi)
-
-	By("validating resized pvc by deploying new pod")
-	resizeTestPod := createPodWithVolume(client, namespace, PodCmdWriteToVolume(DefaultMountPath), testPvc, volumeDetails)
-	defer resizeTestPod.Cleanup()
-
-	By("confirming new pod can write to resized volume")
-	resizeTestPod.WaitForSuccess()
+	_ = "STUB: not implemented"
+	return
 }
 
 func createPodWithVolume(client clientset.Interface, namespace *v1.Namespace, cmd string, testPvc *TestPersistentVolumeClaim, volumeDetails *VolumeDetails) *TestPod {
-	testPod := NewTestPod(client, namespace, cmd)
-	testPod.SetupVolume(testPvc.persistentVolumeClaim, volumeDetails.VolumeMount.NameGenerate, volumeDetails.VolumeMount.MountPathGenerate, volumeDetails.VolumeMount.ReadOnly)
-	testPod.Create()
-
-	return testPod
+	_ = "STUB: not implemented"
+	return nil
 }

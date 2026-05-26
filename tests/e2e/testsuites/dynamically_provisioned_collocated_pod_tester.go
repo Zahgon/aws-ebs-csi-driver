@@ -31,23 +31,8 @@ type DynamicallyProvisionedCollocatedPodTest struct {
 }
 
 func (t *DynamicallyProvisionedCollocatedPodTest) Run(client clientset.Interface, namespace *v1.Namespace) {
-	nodeName := ""
-	for _, pod := range t.Pods {
-		tpod, cleanup := pod.SetupWithDynamicVolumes(client, namespace, t.CSIDriver)
-		if t.ColocatePods && nodeName != "" {
-			tpod.SetNodeSelector(map[string]string{"name": nodeName})
-		}
-		// defer must be called here for resources not get removed before using them
-		for i := range cleanup {
-			defer cleanup[i]()
-		}
-
-		By("deploying the pod")
-		tpod.Create()
-		defer tpod.Cleanup()
-
-		By("checking that the pod is running")
-		tpod.WaitForRunning()
-		nodeName = tpod.pod.Spec.NodeName
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// defer must be called here for resources not get removed before using them

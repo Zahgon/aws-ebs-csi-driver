@@ -6,7 +6,6 @@ package metadata
 
 import (
 	context "context"
-	reflect "reflect"
 
 	arn "github.com/aws/aws-sdk-go-v2/aws/arn"
 	imds "github.com/aws/aws-sdk-go-v2/feature/ec2/imds"
@@ -26,126 +25,90 @@ type MockMetadataServiceMockRecorder struct {
 
 // NewMockMetadataService creates a new mock instance.
 func NewMockMetadataService(ctrl *gomock.Controller) *MockMetadataService {
-	mock := &MockMetadataService{ctrl: ctrl}
-	mock.recorder = &MockMetadataServiceMockRecorder{mock}
-	return mock
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockMetadataService) EXPECT() *MockMetadataServiceMockRecorder {
-	return m.recorder
+	_ = "STUB: not implemented"
+
+	// GetAvailabilityZone mocks base method.
+	return nil
 }
 
-// GetAvailabilityZone mocks base method.
-func (m *MockMetadataService) GetAvailabilityZone() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAvailabilityZone")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
+func (m *MockMetadataService) GetAvailabilityZone() string { _ = "STUB: not implemented"; return "" }
 
 // GetAvailabilityZone indicates an expected call of GetAvailabilityZone.
 func (mr *MockMetadataServiceMockRecorder) GetAvailabilityZone() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAvailabilityZone", reflect.TypeOf((*MockMetadataService)(nil).GetAvailabilityZone))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetInstanceID mocks base method.
-func (m *MockMetadataService) GetInstanceID() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetInstanceID")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
+func (m *MockMetadataService) GetInstanceID() string { _ = "STUB: not implemented"; return "" }
 
 // GetInstanceID indicates an expected call of GetInstanceID.
 func (mr *MockMetadataServiceMockRecorder) GetInstanceID() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstanceID", reflect.TypeOf((*MockMetadataService)(nil).GetInstanceID))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetInstanceType mocks base method.
-func (m *MockMetadataService) GetInstanceType() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetInstanceType")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
+func (m *MockMetadataService) GetInstanceType() string { _ = "STUB: not implemented"; return "" }
 
 // GetInstanceType indicates an expected call of GetInstanceType.
 func (mr *MockMetadataServiceMockRecorder) GetInstanceType() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstanceType", reflect.TypeOf((*MockMetadataService)(nil).GetInstanceType))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetNumAttachedENIs mocks base method.
-func (m *MockMetadataService) GetNumAttachedENIs() int {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNumAttachedENIs")
-	ret0, _ := ret[0].(int)
-	return ret0
-}
+func (m *MockMetadataService) GetNumAttachedENIs() int { _ = "STUB: not implemented"; return 0 }
 
 // GetNumAttachedENIs indicates an expected call of GetNumAttachedENIs.
 func (mr *MockMetadataServiceMockRecorder) GetNumAttachedENIs() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNumAttachedENIs", reflect.TypeOf((*MockMetadataService)(nil).GetNumAttachedENIs))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetNumBlockDeviceMappings mocks base method.
-func (m *MockMetadataService) GetNumBlockDeviceMappings() int {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetNumBlockDeviceMappings")
-	ret0, _ := ret[0].(int)
-	return ret0
-}
+func (m *MockMetadataService) GetNumBlockDeviceMappings() int { _ = "STUB: not implemented"; return 0 }
 
 // GetNumBlockDeviceMappings indicates an expected call of GetNumBlockDeviceMappings.
 func (mr *MockMetadataServiceMockRecorder) GetNumBlockDeviceMappings() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetNumBlockDeviceMappings", reflect.TypeOf((*MockMetadataService)(nil).GetNumBlockDeviceMappings))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetOutpostArn mocks base method.
 func (m *MockMetadataService) GetOutpostArn() arn.ARN {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetOutpostArn")
-	ret0, _ := ret[0].(arn.ARN)
-	return ret0
+	_ = "STUB: not implemented"
+	return *new(arn.ARN)
 }
 
 // GetOutpostArn indicates an expected call of GetOutpostArn.
 func (mr *MockMetadataServiceMockRecorder) GetOutpostArn() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOutpostArn", reflect.TypeOf((*MockMetadataService)(nil).GetOutpostArn))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRegion mocks base method.
-func (m *MockMetadataService) GetRegion() string {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetRegion")
-	ret0, _ := ret[0].(string)
-	return ret0
-}
+func (m *MockMetadataService) GetRegion() string { _ = "STUB: not implemented"; return "" }
 
 // GetRegion indicates an expected call of GetRegion.
 func (mr *MockMetadataServiceMockRecorder) GetRegion() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRegion", reflect.TypeOf((*MockMetadataService)(nil).GetRegion))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // UpdateMetadata mocks base method.
-func (m *MockMetadataService) UpdateMetadata() error {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateMetadata")
-	ret0, _ := ret[0].(error)
-	return ret0
-}
+func (m *MockMetadataService) UpdateMetadata() error { _ = "STUB: not implemented"; return nil }
 
 // UpdateMetadata indicates an expected call of UpdateMetadata.
 func (mr *MockMetadataServiceMockRecorder) UpdateMetadata() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateMetadata", reflect.TypeOf((*MockMetadataService)(nil).UpdateMetadata))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // MockIMDS is a mock of IMDS interface.
@@ -160,133 +123,83 @@ type MockIMDSMockRecorder struct {
 }
 
 // NewMockIMDS creates a new mock instance.
-func NewMockIMDS(ctrl *gomock.Controller) *MockIMDS {
-	mock := &MockIMDS{ctrl: ctrl}
-	mock.recorder = &MockIMDSMockRecorder{mock}
-	return mock
-}
+func NewMockIMDS(ctrl *gomock.Controller) *MockIMDS { _ = "STUB: not implemented"; return nil }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockIMDS) EXPECT() *MockIMDSMockRecorder {
-	return m.recorder
+	_ = "STUB: not implemented"
+
+	// GetDynamicData mocks base method.
+	return nil
 }
 
-// GetDynamicData mocks base method.
 func (m *MockIMDS) GetDynamicData(ctx context.Context, params *imds.GetDynamicDataInput, optFns ...func(*imds.Options)) (*imds.GetDynamicDataOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetDynamicData", varargs...)
-	ret0, _ := ret[0].(*imds.GetDynamicDataOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetDynamicData indicates an expected call of GetDynamicData.
 func (mr *MockIMDSMockRecorder) GetDynamicData(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDynamicData", reflect.TypeOf((*MockIMDS)(nil).GetDynamicData), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetIAMInfo mocks base method.
 func (m *MockIMDS) GetIAMInfo(ctx context.Context, params *imds.GetIAMInfoInput, optFns ...func(*imds.Options)) (*imds.GetIAMInfoOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetIAMInfo", varargs...)
-	ret0, _ := ret[0].(*imds.GetIAMInfoOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetIAMInfo indicates an expected call of GetIAMInfo.
 func (mr *MockIMDSMockRecorder) GetIAMInfo(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetIAMInfo", reflect.TypeOf((*MockIMDS)(nil).GetIAMInfo), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetInstanceIdentityDocument mocks base method.
 func (m *MockIMDS) GetInstanceIdentityDocument(ctx context.Context, params *imds.GetInstanceIdentityDocumentInput, optFns ...func(*imds.Options)) (*imds.GetInstanceIdentityDocumentOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetInstanceIdentityDocument", varargs...)
-	ret0, _ := ret[0].(*imds.GetInstanceIdentityDocumentOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetInstanceIdentityDocument indicates an expected call of GetInstanceIdentityDocument.
 func (mr *MockIMDSMockRecorder) GetInstanceIdentityDocument(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetInstanceIdentityDocument", reflect.TypeOf((*MockIMDS)(nil).GetInstanceIdentityDocument), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetMetadata mocks base method.
 func (m *MockIMDS) GetMetadata(ctx context.Context, params *imds.GetMetadataInput, optFns ...func(*imds.Options)) (*imds.GetMetadataOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetMetadata", varargs...)
-	ret0, _ := ret[0].(*imds.GetMetadataOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetMetadata indicates an expected call of GetMetadata.
 func (mr *MockIMDSMockRecorder) GetMetadata(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetMetadata", reflect.TypeOf((*MockIMDS)(nil).GetMetadata), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetRegion mocks base method.
 func (m *MockIMDS) GetRegion(ctx context.Context, params *imds.GetRegionInput, optFns ...func(*imds.Options)) (*imds.GetRegionOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetRegion", varargs...)
-	ret0, _ := ret[0].(*imds.GetRegionOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetRegion indicates an expected call of GetRegion.
 func (mr *MockIMDSMockRecorder) GetRegion(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRegion", reflect.TypeOf((*MockIMDS)(nil).GetRegion), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetUserData mocks base method.
 func (m *MockIMDS) GetUserData(ctx context.Context, params *imds.GetUserDataInput, optFns ...func(*imds.Options)) (*imds.GetUserDataOutput, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, params}
-	for _, a := range optFns {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "GetUserData", varargs...)
-	ret0, _ := ret[0].(*imds.GetUserDataOutput)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // GetUserData indicates an expected call of GetUserData.
 func (mr *MockIMDSMockRecorder) GetUserData(ctx, params interface{}, optFns ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, params}, optFns...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserData", reflect.TypeOf((*MockIMDS)(nil).GetUserData), varargs...)
+	_ = "STUB: not implemented"
+	return nil
 }

@@ -19,21 +19,7 @@ limitations under the License.
 package mounter
 
 import (
-	"context"
-	"errors"
-	"fmt"
-	"math"
-	"os"
-	"os/exec"
-	"path/filepath"
-	"regexp"
-	"strconv"
-	"strings"
-
-	"golang.org/x/sys/unix"
-	"k8s.io/klog/v2"
 	mountutils "k8s.io/mount-utils"
-	utilexec "k8s.io/utils/exec"
 )
 
 const (
@@ -42,343 +28,154 @@ const (
 )
 
 func NewSafeMounter() (*mountutils.SafeFormatAndMount, error) {
-	return &mountutils.SafeFormatAndMount{
-		Interface: mountutils.New(""),
-		Exec:      utilexec.New(),
-	}, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 func NewSafeMounterV2() (*mountutils.SafeFormatAndMount, error) {
-	return nil, errors.New("NewSafeMounterV2 is not supported on this platform")
+	_ = "STUB: not implemented"
+	return nil, nil
 }
 
 // FindDevicePath finds path of device and verifies its existence
 // if the device is not nvme, return the path directly
 // if the device is nvme, finds and returns the nvme device path eg. /dev/nvme1n1.
 func (m *NodeMounter) FindDevicePath(devicePath, volumeID, partition, region string) (string, error) {
-	strippedVolumeName := strings.ReplaceAll(volumeID, "-", "")
-	canonicalDevicePath := ""
-
-	// If the given path exists, the device MAY be nvme. Further, it MAY be a
-	// symlink to the nvme device path like:
-	// | $ stat /dev/xvdba
-	// | File: ‘/dev/xvdba’ -> ‘nvme1n1’
-	// Since these are maybes, not guarantees, the search for the nvme device
-	// path below must happen and must rely on volume ID
-	exists, err := m.PathExists(devicePath)
-	if err != nil {
-		return "", fmt.Errorf("failed to check if path %q exists: %w", devicePath, err)
-	}
-
-	if exists {
-		stat, lstatErr := os.Lstat(devicePath)
-		if lstatErr != nil {
-			return "", fmt.Errorf("failed to lstat %q: %w", devicePath, lstatErr)
-		}
-
-		if stat.Mode()&os.ModeSymlink == os.ModeSymlink {
-			canonicalDevicePath, err = filepath.EvalSymlinks(devicePath)
-			if err != nil {
-				return "", fmt.Errorf("failed to evaluate symlink %q: %w", devicePath, err)
-			}
-		} else {
-			canonicalDevicePath = devicePath
-		}
-
-		klog.V(5).InfoS("[Debug] The canonical device path was resolved", "devicePath", devicePath, "cacanonicalDevicePath", canonicalDevicePath)
-		if err = verifyVolumeSerialMatch(canonicalDevicePath, strippedVolumeName, execRunner); err != nil {
-			return "", err
-		}
-		return m.appendPartition(canonicalDevicePath, partition), nil
-	}
-
-	klog.V(5).InfoS("[Debug] Falling back to nvme volume ID lookup", "devicePath", devicePath)
-
-	// AWS recommends identifying devices by volume ID
-	// (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/nvme-ebs-volumes.html),
-	// so find the nvme device path using volume ID. This is the magic name on
-	// which AWS presents NVME devices under /dev/disk/by-id/. For example,
-	// vol-0fab1d5e3f72a5e23 creates a symlink at
-	// /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0fab1d5e3f72a5e23
-	nvmeName := "nvme-Amazon_Elastic_Block_Store_" + strippedVolumeName
-	nvmeDevicePath, err := findNvmeVolume(nvmeName)
-
-	if err == nil {
-		klog.V(5).InfoS("[Debug] successfully resolved", "nvmeName", nvmeName, "nvmeDevicePath", nvmeDevicePath)
-		canonicalDevicePath = nvmeDevicePath
-		if err = verifyVolumeSerialMatch(canonicalDevicePath, strippedVolumeName, execRunner); err != nil {
-			return "", err
-		}
-		return m.appendPartition(canonicalDevicePath, partition), nil
-	} else {
-		klog.V(5).InfoS("[Debug] error searching for nvme path", "nvmeName", nvmeName, "err", err)
-	}
-
-	if canonicalDevicePath == "" {
-		return "", fmt.Errorf("no device path for device %q volume %q found", devicePath, volumeID)
-	}
-
-	canonicalDevicePath = m.appendPartition(canonicalDevicePath, partition)
-	return canonicalDevicePath, nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
+
+// If the given path exists, the device MAY be nvme. Further, it MAY be a
+// symlink to the nvme device path like:
+// | $ stat /dev/xvdba
+// | File: ‘/dev/xvdba’ -> ‘nvme1n1’
+// Since these are maybes, not guarantees, the search for the nvme device
+// path below must happen and must rely on volume ID
+
+// AWS recommends identifying devices by volume ID
+// (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/nvme-ebs-volumes.html),
+// so find the nvme device path using volume ID. This is the magic name on
+// which AWS presents NVME devices under /dev/disk/by-id/. For example,
+// vol-0fab1d5e3f72a5e23 creates a symlink at
+// /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0fab1d5e3f72a5e23
 
 // findNvmeVolume looks for the nvme volume with the specified name
 // It follows the symlink (if it exists) and returns the absolute path to the device.
 func findNvmeVolume(findName string) (device string, err error) {
-	p := filepath.Join("/dev/disk/by-id/", findName)
-	stat, err := os.Lstat(p)
-	if err != nil {
-		if os.IsNotExist(err) {
-			klog.V(5).InfoS("[Debug] nvme path not found", "path", p)
-			return "", fmt.Errorf("nvme path %q not found", p)
-		}
-		return "", fmt.Errorf("error getting stat of %q: %w", p, err)
-	}
-
-	if stat.Mode()&os.ModeSymlink != os.ModeSymlink {
-		klog.InfoS("nvme file found, but was not a symlink", "path", p)
-		return "", fmt.Errorf("nvme file %q found, but was not a symlink", p)
-	}
-	// Find the target, resolving to an absolute path
-	// For example, /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0fab1d5e3f72a5e23 -> ../../nvme2n1
-	resolved, err := filepath.EvalSymlinks(p)
-	if err != nil {
-		return "", fmt.Errorf("error reading target of symlink %q: %w", p, err)
-	}
-
-	if !strings.HasPrefix(resolved, "/dev") {
-		return "", fmt.Errorf("resolved symlink for %q was unexpected: %q", p, resolved)
-	}
-
-	return resolved, nil
+	_ = "STUB: not implemented"
+	return "", nil
 }
+
+// Find the target, resolving to an absolute path
+// For example, /dev/disk/by-id/nvme-Amazon_Elastic_Block_Store_vol0fab1d5e3f72a5e23 -> ../../nvme2n1
 
 // execRunner is a helper to inject exec.Comamnd().CombinedOutput() for verifyVolumeSerialMatch
 // Tests use a mocked version that does not actually execute any binaries.
 func execRunner(name string, arg ...string) ([]byte, error) {
+	_ = "STUB: not implemented"
 	// TODO: Pass context down from driver.go
-	return exec.CommandContext(context.TODO(), name, arg...).CombinedOutput()
+	return nil, nil
 }
 
 // verifyVolumeSerialMatch checks the volume serial of the device against the expected volume.
 func verifyVolumeSerialMatch(canonicalDevicePath string, strippedVolumeName string, execRunner func(string, ...string) ([]byte, error)) error {
+	_ = "STUB: not implemented"
 	// As a security precaution, check the device name looks like a real device name before passing anything to exec
-	cleanDevice := filepath.Clean(canonicalDevicePath)
-	if !regexp.MustCompile(`^/dev/[A-Za-z0-9]+$`).MatchString(cleanDevice) {
-		return fmt.Errorf("refusing to mount %s (raw: %s) because it does not appear to be a valid device", cleanDevice, canonicalDevicePath)
-	}
-
-	// In some rare cases, a race condition can lead to the /dev/disk/by-id/ symlink becoming out of date
-	// See https://github.com/kubernetes-sigs/aws-ebs-csi-driver/issues/1224 for more info
-	// Attempt to use lsblk to double check that the nvme device selected was the correct volume
-	output, err := execRunner("lsblk", "--noheadings", "--ascii", "--nodeps", "--output", "SERIAL", "--", cleanDevice)
-
-	if err == nil {
-		// Look for an EBS volume ID in the output, compare all matches against what we expect
-		// (in some rare cases there may be multiple matches due to lsblk printing partitions)
-		// If no volume ID is in the output (non-Nitro instances, SBE devices, etc) silently proceed
-		volumeRegex := regexp.MustCompile(`vol[a-z0-9]+`)
-		for _, volume := range volumeRegex.FindAllString(string(output), -1) {
-			klog.V(6).InfoS("Comparing volume serial", "cleanDevice", cleanDevice, "expected", strippedVolumeName, "actual", volume)
-			if volume != strippedVolumeName {
-				return fmt.Errorf("refusing to mount %s because it claims to be %s but should be %s", cleanDevice, volume, strippedVolumeName)
-			}
-		}
-	} else {
-		// If the command fails (for example, because lsblk is not available), silently ignore the error and proceed
-		klog.V(5).ErrorS(err, "Ignoring lsblk failure", "cleanDevice", cleanDevice, "strippedVolumeName", strippedVolumeName)
-	}
-
 	return nil
 }
 
+// In some rare cases, a race condition can lead to the /dev/disk/by-id/ symlink becoming out of date
+// See https://github.com/kubernetes-sigs/aws-ebs-csi-driver/issues/1224 for more info
+// Attempt to use lsblk to double check that the nvme device selected was the correct volume
+
+// Look for an EBS volume ID in the output, compare all matches against what we expect
+// (in some rare cases there may be multiple matches due to lsblk printing partitions)
+// If no volume ID is in the output (non-Nitro instances, SBE devices, etc) silently proceed
+
+// If the command fails (for example, because lsblk is not available), silently ignore the error and proceed
+
 // PreparePublishTarget creates the target directory for the volume to be mounted.
 func (m *NodeMounter) PreparePublishTarget(target string) error {
-	klog.V(4).InfoS("NodePublishVolume: creating dir", "target", target)
-	if err := m.MakeDir(target); err != nil {
-		return fmt.Errorf("could not create dir %q: %w", target, err)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // IsBlockDevice checks if the given path is a block device.
 func (m *NodeMounter) IsBlockDevice(fullPath string) (bool, error) {
-	var st unix.Stat_t
-	err := unix.Stat(fullPath, &st)
-	if err != nil {
-		return false, err
-	}
-
-	return (st.Mode & unix.S_IFMT) == unix.S_IFBLK, nil
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // GetBlockSizeBytes gets the size of the disk in bytes.
 func (m *NodeMounter) GetBlockSizeBytes(devicePath string) (int64, error) {
-	output, err := m.Exec.Command("blockdev", "--getsize64", devicePath).Output()
-	if err != nil {
-		return -1, fmt.Errorf("error when getting size of block volume at path %s: output: %s, err: %w", devicePath, string(output), err)
-	}
-	strOut := strings.TrimSpace(string(output))
-	gotSizeBytes, err := strconv.ParseInt(strOut, 10, 64)
-	if err != nil {
-		return -1, fmt.Errorf("failed to parse size %s as int", strOut)
-	}
-	return gotSizeBytes, nil
+	_ = "STUB: not implemented"
+	return 0, nil
 }
 
 // appendPartition appends the partition to the device path.
 func (m *NodeMounter) appendPartition(devicePath, partition string) string {
-	if partition == "" {
-		return devicePath
-	}
-
-	if strings.HasPrefix(devicePath, "/dev/nvme") {
-		return devicePath + nvmeDiskPartitionSuffix + partition
-	}
-
-	return devicePath + diskPartitionSuffix + partition
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // GetDeviceNameFromMount returns the volume ID for a mount path.
 func (m *NodeMounter) GetDeviceNameFromMount(mountPath string) (string, int, error) {
-	return mountutils.GetDeviceNameFromMount(m, mountPath)
+	_ = "STUB: not implemented"
+	return "", 0, nil
 }
 
 // IsCorruptedMnt return true if err is about corrupted mount point.
-func (m *NodeMounter) IsCorruptedMnt(err error) bool {
-	return mountutils.IsCorruptedMnt(err)
-}
+func (m *NodeMounter) IsCorruptedMnt(err error) bool { _ = "STUB: not implemented"; return false }
 
 // MakeFile function is mirrored in ./sanity_test.go to make sure sanity test covered this block of code
 // Please mirror the change to func MakeFile in ./sanity_test.go.
-func (m *NodeMounter) MakeFile(path string) error {
-	f, err := os.OpenFile(path, os.O_CREATE, os.FileMode(0644))
-	if err != nil {
-		if !os.IsExist(err) {
-			return err
-		}
-	}
-	if err = f.Close(); err != nil {
-		return err
-	}
-	return nil
-}
+func (m *NodeMounter) MakeFile(path string) error { _ = "STUB: not implemented"; return nil }
 
 // MakeDir function is mirrored in ./sanity_test.go to make sure sanity test covered this block of code
 // Please mirror the change to func MakeFile in ./sanity_test.go.
-func (m *NodeMounter) MakeDir(path string) error {
-	err := os.MkdirAll(path, os.FileMode(0755))
-	if err != nil {
-		if !os.IsExist(err) {
-			return err
-		}
-	}
-	return nil
-}
+func (m *NodeMounter) MakeDir(path string) error { _ = "STUB: not implemented"; return nil }
 
 // PathExists function is mirrored in ./sanity_test.go to make sure sanity test covered this block of code
 // Please mirror the change to func MakeFile in ./sanity_test.go.
 func (m *NodeMounter) PathExists(path string) (bool, error) {
-	return mountutils.PathExists(path)
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // Resize resizes the filesystem of the given devicePath.
 func (m *NodeMounter) Resize(devicePath, deviceMountPath string) (bool, error) {
-	return mountutils.NewResizeFs(m.Exec).Resize(devicePath, deviceMountPath)
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // NeedResize checks if the filesystem of the given devicePath needs to be resized.
 func (m *NodeMounter) NeedResize(devicePath string, deviceMountPath string) (bool, error) {
-	return mountutils.NewResizeFs(m.Exec).NeedResize(devicePath, deviceMountPath)
+	_ = "STUB: not implemented"
+	return false, nil
 }
 
 // Unpublish unmounts the given path.
 func (m *NodeMounter) Unpublish(path string) error {
+	_ = "STUB: not implemented"
 	// On linux, unpublish and unstage both perform an unmount
-	return m.Unstage(path)
+	return nil
 }
 
 // Unstage unmounts the given path.
-func (m *NodeMounter) Unstage(path string) error {
-	err := mountutils.CleanupMountPoint(path, m, false)
-	// Ignore the error when it contains "not mounted", because that indicates the
-	// world is already in the desired state
-	//
-	// mount-utils attempts to detect this on its own but fails when running on
-	// a read-only root filesystem, which our manifests use by default
-	if err == nil || strings.Contains(fmt.Sprint(err), "not mounted") {
-		return nil
-	} else {
-		return err
-	}
-}
+func (m *NodeMounter) Unstage(path string) error { _ = "STUB: not implemented"; return nil }
+
+// Ignore the error when it contains "not mounted", because that indicates the
+// world is already in the desired state
+//
+// mount-utils attempts to detect this on its own but fails when running on
+// a read-only root filesystem, which our manifests use by default
 
 // GetVolumeStats acquires byte and inode statistics of filesystem at volumePath.
 func (m *NodeMounter) GetVolumeStats(volumePath string) (VolumeStats, error) {
-	stats := VolumeStats{}
-
-	statfs := &unix.Statfs_t{}
-	err := unix.Statfs(volumePath, statfs)
-	if err != nil {
-		return stats, err
-	}
-
-	// Get byte stats (safely)
-	bsize := statfs.Bsize
-	if bsize < 0 {
-		return stats, fmt.Errorf("negative block size reported: %d", bsize)
-	}
-	ubsize := uint64(bsize)
-
-	if statfs.Bavail > math.MaxUint64/ubsize {
-		return stats, errors.New("available bytes calculation would overflow")
-	}
-	availBytes := statfs.Bavail * ubsize
-	if availBytes > math.MaxInt64 {
-		return stats, errors.New("available bytes value exceeds int64 maximum")
-	}
-	stats.AvailableBytes = int64(availBytes)
-
-	if statfs.Blocks > math.MaxUint64/ubsize {
-		return stats, errors.New("total bytes calculation would overflow")
-	}
-	totBytes := statfs.Blocks * ubsize
-	if totBytes > math.MaxInt64 {
-		return stats, errors.New("total bytes value exceeds int64 maximum")
-	}
-	stats.TotalBytes = int64(totBytes)
-
-	var usedBlocks uint64
-	if statfs.Blocks > statfs.Bfree {
-		usedBlocks = statfs.Blocks - statfs.Bfree
-	} else {
-		usedBlocks = 0
-	}
-
-	if usedBlocks > math.MaxUint64/ubsize {
-		return stats, errors.New("used bytes calculation would overflow")
-	}
-	usedBytes := usedBlocks * ubsize
-	if usedBytes > math.MaxInt64 {
-		return stats, errors.New("used bytes value exceeds int64 maximum")
-	}
-	stats.UsedBytes = int64(usedBytes)
-
-	// Get inode stats (safely)
-	if statfs.Ffree > math.MaxInt64 {
-		return stats, errors.New("available inodes value exceeds int64 maximum")
-	}
-	stats.AvailableInodes = int64(statfs.Ffree)
-
-	if statfs.Files > math.MaxInt64 {
-		return stats, errors.New("total inodes value exceeds int64 maximum")
-	}
-	stats.TotalInodes = int64(statfs.Files)
-
-	if stats.TotalInodes < stats.AvailableInodes {
-		return stats, errors.New("inconsistent inode counts: total < available")
-	}
-	stats.UsedInodes = stats.TotalInodes - stats.AvailableInodes
-
-	return stats, nil
+	_ = "STUB: not implemented"
+	return *new(VolumeStats), nil
 }
+
+// Get byte stats (safely)
+
+// Get inode stats (safely)

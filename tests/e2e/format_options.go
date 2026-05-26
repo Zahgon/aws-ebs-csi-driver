@@ -116,6 +116,6 @@ var _ = Describe("[ebs-csi-e2e] [single-az] [format-options] Formatting a volume
 })
 
 func fsTypeDoesNotSupportFormatOptionParameter(fsType string, createVolumeParameterKey string) bool {
-	_, paramNotSupported := ebscsidriver.FileSystemConfigs[fsType].NotSupportedParams[createVolumeParameterKey]
-	return paramNotSupported
+	_ = "STUB: not implemented"
+	return false
 }
